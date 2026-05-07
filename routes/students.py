@@ -147,3 +147,37 @@ def update_student(id):
         return {
             "error": str(e)
         }, 500
+
+# =========================
+# DELETE STUDENT
+# =========================
+
+@students_bp.route("/students/<id>", methods=["DELETE"])
+def delete_student(id):
+
+    try:
+
+        conn = get_connection()
+
+        cursor = conn.cursor()
+
+        query = """
+        DELETE FROM STUDENTS
+        WHERE ID_STUDENT = ?
+        """
+
+        cursor.execute(query, (id))
+
+        conn.commit()
+
+        conn.close()
+
+        return {
+            "message": "Student deleted successfully"
+        }
+
+    except Exception as e:
+
+        return {
+            "error": str(e)
+        }, 500
