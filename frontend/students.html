@@ -14,6 +14,36 @@
         Back
     </button>
 
+    <button id="logout-btn" onclick="logout()">
+        Logout
+    </button>
+
+    <hr>
+
+    <div id="form-container">
+
+        <h2>Add Student</h2>
+
+        <input type="text" id="id_student" placeholder="Student ID">
+
+        <input type="text" id="name_student" placeholder="Name">
+
+        <input type="date" id="birthdate">
+
+        <input type="text" id="gender" placeholder="Gender">
+
+        <input type="number" id="enrollment_year" placeholder="Enrollment Year">
+
+        <input type="number" id="id_department" placeholder="Department ID">
+
+        <button onclick="createStudent()">
+            Create Student
+        </button>
+
+    </div>
+
+    <hr>
+
     <table border="1" width="100%">
 
         <thead>
@@ -24,6 +54,7 @@
                 <th>Gender</th>
                 <th>Enrollment</th>
                 <th>Department</th>
+                <th>Actions</th>
             </tr>
         </thead>
 

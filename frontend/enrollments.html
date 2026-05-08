@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Enrollments</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <h1>Enrollments</h1>
+
+    <button onclick="goBack()">
+        Back
+    </button>
+
+    <button onclick="logout()">
+        Logout
+    </button>
+
+    <hr>
+
+    <div id="form-container">
+
+        <h2>Enroll Student</h2>
+
+        <input type="text"
+               id="id_student"
+               placeholder="Student ID">
+
+        <input type="number"
+               id="id_course"
+               placeholder="Course ID">
+
+        <input type="text"
+               id="semester"
+               placeholder="Semester">
+
+        <button onclick="createEnrollment()">
+            Enroll
+        </button>
+
+    </div>
+
+    <hr>
+
+    <table border="1" width="100%">
+
+        <thead>
+
+            <tr>
+                <th>ID</th>
+                <th>Student</th>
+                <th>Course</th>
+                <th>Semester</th>
+                <th>Actions</th>
+            </tr>
+
+        </thead>
+
+        <tbody id="enrollment-body">
+
+        </tbody>
+
+    </table>
+
+    <script src="js/enrollments.js"></script>
+
+</body>
+</html>

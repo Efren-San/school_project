@@ -136,6 +136,122 @@ def create_enrollment():
 
         cursor = conn.cursor()
 
+        # =========================
+        # VALIDAR STUDENT
+        # =========================
+
+        check_student = """
+        SELECT *
+        FROM STUDENTS
+        WHERE ID_STUDENT = ?
+        """
+
+        cursor.execute(
+            check_student,
+            (data.get("id_student"),)
+        )
+
+        student = cursor.fetchone()
+
+        if not student:
+
+            conn.close()
+
+            return {
+                "error": "Student not found"
+            }, 404
+
+        # =========================
+        # VALIDAR COURSE
+        # =========================
+
+        check_course = """
+        SELECT CAPACITY
+        FROM COURSE
+        WHERE ID_COURSE = ?
+        """
+
+        cursor.execute(
+            check_course,
+            (data.get("id_course"),)
+        )
+
+        course = cursor.fetchone()
+
+        if not course:
+
+            conn.close()
+
+            return {
+                "error": "Course not found"
+            }, 404
+
+        capacity = course[0]
+
+        # =========================
+        # VALIDAR DUPLICADO
+        # =========================
+
+        check_duplicate = """
+        SELECT *
+        FROM ENROLLMENT
+        WHERE ID_STUDENT = ?
+        AND ID_COURSE = ?
+        AND SEMESTER = ?
+        """
+
+        cursor.execute(
+            check_duplicate,
+            (
+                data.get("id_student"),
+                data.get("id_course"),
+                data.get("semester")
+            )
+        )
+
+        duplicate = cursor.fetchone()
+
+        if duplicate:
+
+            conn.close()
+
+            return {
+                "error": "Student already enrolled"
+            }, 400
+
+        # =========================
+        # VALIDAR CAPACIDAD
+        # =========================
+
+        count_query = """
+        SELECT COUNT(*)
+        FROM ENROLLMENT
+        WHERE ID_COURSE = ?
+        AND SEMESTER = ?
+        """
+
+        cursor.execute(
+            count_query,
+            (
+                data.get("id_course"),
+                data.get("semester")
+            )
+        )
+
+        current_students = cursor.fetchone()[0]
+
+        if current_students >= capacity:
+
+            conn.close()
+
+            return {
+                "error": "Course is full"
+            }, 400
+
+        # =========================
+        # INSERT ENROLLMENT
+        # =========================
+
         query = """
         INSERT INTO ENROLLMENT(
             ID_STUDENT,
@@ -166,6 +282,10 @@ def create_enrollment():
 
     except Exception as e:
 
+        conn.rollback()
+
+        conn.close()
+
         return {
             "error": str(e)
         }, 500
@@ -189,6 +309,28 @@ def delete_enrollment(id):
         conn = get_connection()
 
         cursor = conn.cursor()
+
+        # =========================
+        # VALIDAR ENROLLMENT
+        # =========================
+
+        check_query = """
+        SELECT *
+        FROM ENROLLMENT
+        WHERE ID_ENROLLMENT = ?
+        """
+
+        cursor.execute(check_query, (id,))
+
+        enrollment = cursor.fetchone()
+
+        if not enrollment:
+
+            conn.close()
+
+            return {
+                "error": "Enrollment not found"
+            }, 404
 
         # =========================
         # INSERT LOG
@@ -231,6 +373,10 @@ def delete_enrollment(id):
         }
 
     except Exception as e:
+
+        conn.rollback()
+
+        conn.close()
 
         return {
             "error": str(e)
