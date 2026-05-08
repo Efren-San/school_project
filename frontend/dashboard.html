@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+
+    <h1>Dashboard</h1>
+
+    <p id="role"></p>
+
+    <button onclick="goStudents()">
+        Students
+    </button>
+
+    <button onclick="goCourses()">
+        Courses
+    </button>
+
+    <button onclick="goGrades()">
+        Grades
+    </button>
+
+    <button onclick="logout()">
+    Logout
+    </button>
+
+<script>
+
+    const user = JSON.parse(
+        localStorage.getItem("user")
+    )
+
+    if(!user){
+
+        window.location.href = "login.html"
+    }
+
+    document.getElementById("role").innerText =
+        "Role: " + user.role
+
+    if(user.role === "student"){
+
+        document.write("<p>Student Mode</p>")
+    }
+
+    function goStudents(){
+        window.location.href = "students.html"
+    }
+
+    function goCourses(){
+        window.location.href = "courses.html"
+    }
+
+    function goGrades(){
+        window.location.href = "grades.html"
+    }
+
+    function logout(){
+        localStorage.removeItem("user")
+        window.location.href = "login.html"
+    }
+
+</script>
+
+</body>
+</html>
