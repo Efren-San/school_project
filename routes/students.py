@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from db import get_connection
+from utils.auth import require_role
 
 students_bp = Blueprint("students", __name__)
 
@@ -9,6 +10,12 @@ students_bp = Blueprint("students", __name__)
 
 @students_bp.route("/students", methods=["GET"])
 def get_students():
+
+    # SOLO admin y teacher pueden ver todos los estudiantes
+    auth = require_role(["admin", "teacher"])
+
+    if auth:
+        return auth
 
     conn = get_connection()
 
@@ -37,17 +44,69 @@ def get_students():
 
 
 # =========================
+# GET ONE STUDENT
+# =========================
+
+@students_bp.route("/students/<id>", methods=["GET"])
+def get_student(id):
+
+    # admin, teacher y student pueden entrar
+    auth = require_role(["admin", "teacher", "student"])
+
+    if auth:
+        return auth
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    query = """
+    SELECT *
+    FROM STUDENTS
+    WHERE ID_STUDENT = ?
+    """
+
+    cursor.execute(query, (id,))
+
+    row = cursor.fetchone()
+
+    conn.close()
+
+    if not row:
+
+        return {
+            "error": "Student not found"
+        }, 404
+
+    student = {
+        "id_student": row[0],
+        "name_student": row[1],
+        "birthdate": str(row[2]),
+        "gender": row[3],
+        "enrollment_year": row[4],
+        "id_department": row[5]
+    }
+
+    return student
+
+
+# =========================
 # POST STUDENT
 # =========================
 
 @students_bp.route("/students", methods=["POST"])
 def create_student():
 
+    # SOLO admin puede crear
+    auth = require_role(["admin"])
+
+    if auth:
+        return auth
+
     try:
 
         data = request.json
 
-        # Validar si llega JSON
         if not data:
 
             return {
@@ -96,12 +155,19 @@ def create_student():
             "error": str(e)
         }, 500
 
+
 # =========================
 # UPDATE STUDENT
 # =========================
 
 @students_bp.route("/students/<id>", methods=["PUT"])
 def update_student(id):
+
+    # SOLO admin puede editar
+    auth = require_role(["admin"])
+
+    if auth:
+        return auth
 
     try:
 
@@ -148,12 +214,19 @@ def update_student(id):
             "error": str(e)
         }, 500
 
+
 # =========================
 # DELETE STUDENT
 # =========================
 
 @students_bp.route("/students/<id>", methods=["DELETE"])
 def delete_student(id):
+
+    # SOLO admin puede eliminar
+    auth = require_role(["admin"])
+
+    if auth:
+        return auth
 
     try:
 
@@ -166,7 +239,7 @@ def delete_student(id):
         WHERE ID_STUDENT = ?
         """
 
-        cursor.execute(query, (id))
+        cursor.execute(query, (id,))
 
         conn.commit()
 
