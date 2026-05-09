@@ -1,70 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Students</title>
 
-    <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+
+    <title>
+        Students
+    </title>
+
 </head>
+
 <body>
 
-    <h1>Students</h1>
+    <h1>
+        Students
+    </h1>
 
-    <button onclick="goBack()">
+    <button onclick="goDashboard()">
         Back
     </button>
 
-    <button id="logout-btn" onclick="logout()">
-        Logout
+    <button onclick="loadStudents()">
+        Reload
     </button>
 
     <hr>
 
-    <div id="form-container">
+    <h2>
+        Create Student
+    </h2>
 
-        <h2>Add Student</h2>
+    <input type="text" id="id_student" placeholder="Student ID">
 
-        <input type="text" id="id_student" placeholder="Student ID">
+    <input type="text" id="name_student" placeholder="Student Name">
 
-        <input type="text" id="name_student" placeholder="Name">
+    <input type="date" id="birthdate">
 
-        <input type="date" id="birthdate">
+    <input type="text" id="gender" placeholder="M/F">
 
-        <input type="text" id="gender" placeholder="Gender">
+    <input type="number" id="enrollment_year" placeholder="2026">
 
-        <input type="number" id="enrollment_year" placeholder="Enrollment Year">
+    <input type="number" id="id_department" placeholder="Department ID">
 
-        <input type="number" id="id_department" placeholder="Department ID">
-
-        <button onclick="createStudent()">
-            Create Student
-        </button>
-
-    </div>
+    <button onclick="createStudent()">
+        Create
+    </button>
 
     <hr>
 
-    <table border="1" width="100%">
+    <table border="1">
 
         <thead>
+
             <tr>
+
                 <th>ID</th>
+
                 <th>Name</th>
+
                 <th>Birthdate</th>
+
                 <th>Gender</th>
-                <th>Enrollment</th>
+
+                <th>Year</th>
+
                 <th>Department</th>
-                <th>Actions</th>
+
             </tr>
+
         </thead>
 
-        <tbody id="students-body">
+        <tbody id="studentsTable">
 
         </tbody>
 
     </table>
 
-    <script src="js/students.js"></script>
+<script>
+
+const API_URL = "http://127.0.0.1:5000"
+
+const user = JSON.parse(
+    localStorage.getItem("user")
+)
+
+if(!user){
+
+    window.location.href = "login.html"
+}
+
+async function loadStudents(){
+
+    try{
+
+        const response = await fetch(
+            API_URL + "/students",
+            {
+                headers:{
+                    "Role": user.role
+                }
+            }
+        )
+
+        const data = await response.json()
+
+        const table =
+            document.getElementById(
+                "studentsTable"
+            )
+
+        table.innerHTML = ""
+
+        data.forEach(student => {
+
+            table.innerHTML += `
+                <tr>
+
+                    <td>${student.id_student}</td>
+
+                    <td>${student.name_student}</td>
+
+                    <td>${student.birthdate}</td>
+
+                    <td>${student.gender}</td>
+
+                    <td>${student.enrollment_year}</td>
+
+                    <td>${student.id_department}</td>
+
+                </tr>
+            `
+        })
+
+    }catch(error){
+
+        console.log(error)
+    }
+}
+
+async function createStudent(){
+
+    const student = {
+
+        id_student:
+            document.getElementById("id_student").value,
+
+        name_student:
+            document.getElementById("name_student").value,
+
+        birthdate:
+            document.getElementById("birthdate").value,
+
+        gender:
+            document.getElementById("gender").value,
+
+        enrollment_year:
+            document.getElementById("enrollment_year").value,
+
+        id_department:
+            document.getElementById("id_department").value
+    }
+
+    try{
+
+        const response = await fetch(
+            API_URL + "/students",
+            {
+                method: "POST",
+
+                headers:{
+                    "Content-Type":
+                        "application/json",
+
+                    "Role": user.role
+                },
+
+                body: JSON.stringify(student)
+            }
+        )
+
+        const data = await response.json()
+
+        alert(data.message || data.error)
+
+        loadStudents()
+
+    }catch(error){
+
+        console.log(error)
+    }
+}
+
+function goDashboard(){
+
+    window.location.href = "dashboard.html"
+}
+
+loadStudents()
+
+</script>
 
 </body>
 </html>
