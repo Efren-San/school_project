@@ -37,44 +37,47 @@ async function loadEnrollments(){
 
     table.innerHTML = ""
 
-    data.forEach(enrollment => {
+data.forEach(enrollment => {
 
-        table.innerHTML += `
-            <tr>
+    table.innerHTML += `
+        <tr>
 
-                <td>${enrollment.id_enrollment}</td>
+            <td>${enrollment.id_enrollment}</td>
 
-                <td>${enrollment.id_student}</td>
+            <td>${enrollment.student}</td>
 
-                <td>${enrollment.id_course}</td>
+            <td>${enrollment.course}</td>
 
-                <td>${enrollment.semester}</td>
+            <td>${enrollment.enrollment_date}</td>
 
-                <td>
+            <td>${enrollment.semester}</td>
 
-                    ${
-                        user.role === "admin"
-                        ||
+            <td>
 
-                        user.role === "teacher"
+                ${
+                    user.role === "admin"
+                    ||
 
-                        ?
+                    user.role === "teacher"
 
-                        `
-                        <button onclick="deleteEnrollment(${enrollment.id_enrollment})">
-                            Drop
-                        </button>
-                        `
+                    ?
 
-                        :
+                    `
+                    <button
+                        class="btn btn-danger btn-sm"
+                        onclick="deleteEnrollment(${enrollment.id_enrollment})">
+                        Drop
+                    </button>
+                    `
 
-                        ""
-                    }
+                    :
 
-                </td>
+                    ""
+                }
 
-            </tr>
-        `
+            </td>
+        </tr>
+            `
     })
 }
 

@@ -22,19 +22,18 @@ def get_enrollments():
     cursor = conn.cursor()
 
     query = """
+
     SELECT
-        E.ID_ENROLLMENT,
-        S.NAME_STUDENT,
-        C.NAME_COURSE,
-        E.ENROLLMENT_DATE,
-        E.SEMESTER
-    FROM ENROLLMENT E
-
-    INNER JOIN STUDENTS S
-    ON E.ID_STUDENT = S.ID_STUDENT
-
-    INNER JOIN COURSE C
-    ON E.ID_COURSE = C.ID_COURSE
+    	E.ID_ENROLLMENT,
+    	E.ID_STUDENT,
+    	E.ID_COURSE,
+    	S.NAME_STUDENT,
+    	C.NAME_COURSE,
+    	E.ENROLLMENT_DATE,
+    	E.SEMESTER
+   FROM ENROLLMENT E
+   INNER JOIN STUDENTS S ON E.ID_STUDENT = S.ID_STUDENT
+   INNER JOIN COURSE C ON E.ID_COURSE = C.ID_COURSE
     """
 
     cursor.execute(query)
@@ -44,15 +43,13 @@ def get_enrollments():
     enrollments = []
 
     for row in rows:
-
-        enrollments.append({
-            "id_enrollment": row[0],
-            "student": row[1],
-            "course": row[2],
-            "enrollment_date": str(row[3]),
-            "semester": row[4]
-        })
-
+    	enrollments.append({
+      	 "id_enrollment": row[0],
+      	 "student": row[1],
+       	 "course": row[2],
+       	 "enrollment_date": str(row[3]),
+       	 "semester": row[4]
+   	 })
     conn.close()
 
     return enrollments
