@@ -18,6 +18,10 @@ if(
     ).style.display = "none"
 }
 
+// =========================
+// LOAD ENROLLMENTS
+// =========================
+
 async function loadEnrollments(){
 
     const response = await fetch(
@@ -37,70 +41,54 @@ async function loadEnrollments(){
 
     table.innerHTML = ""
 
-data.forEach(enrollment => {
+    data.forEach(enrollment => {
 
-    table.innerHTML += `
-        <tr>
+        table.innerHTML += `
+            <tr>
 
-            <td>${enrollment.id_enrollment}</td>
+                <td>${enrollment.id_enrollment}</td>
+                <td>${enrollment.student}</td>
+                <td>${enrollment.course}</td>
+                <td>${enrollment.enrollment_date}</td>
+                <td>${enrollment.semester}</td>
 
-            <td>${enrollment.student}</td>
+                <td>
 
-            <td>${enrollment.course}</td>
+                    ${
+                        user.role === "admin"
+                        || user.role === "teacher"
+                        ? `
+                            <button
+                                class="btn btn-danger btn-sm"
+                                onclick="deleteEnrollment(${enrollment.id_enrollment})">
+                                Drop
+                            </button>
+                        `
+                        : ""
+                    }
 
-            <td>${enrollment.enrollment_date}</td>
-
-            <td>${enrollment.semester}</td>
-
-            <td>
-
-                ${
-                    user.role === "admin"
-                    ||
-
-                    user.role === "teacher"
-
-                    ?
-
-                    `
-                    <button
-                        class="btn btn-danger btn-sm"
-                        onclick="deleteEnrollment(${enrollment.id_enrollment})">
-                        Drop
-                    </button>
-                    `
-
-                    :
-
-                    ""
-                }
-
-            </td>
-        </tr>
-            `
+                </td>
+            </tr>
+        `
     })
 }
+
+// =========================
+// CREATE ENROLLMENT
+// =========================
 
 async function createEnrollment(){
 
     const enrollment = {
 
         id_student:
-            document.getElementById(
-                "id_student"
-            ).value,
+            document.getElementById("id_student").value,
 
         id_course:
-            parseInt(
-                document.getElementById(
-                    "id_course"
-                ).value
-            ),
+            document.getElementById("id_course").value,
 
         semester:
-            document.getElementById(
-                "semester"
-            ).value
+            document.getElementById("semester").value
     }
 
     const response = await fetch(
@@ -119,14 +107,37 @@ async function createEnrollment(){
 
     const data = await response.json()
 
-    alert(data.message || data.error)
+    await Swal.fire({
+        icon: data.error ? "error" : "success",
+        title: data.error ? "Error" : "Success",
+        text: data.message || data.error
+    })
 
     loadEnrollments()
 }
 
+// =========================
+// DELETE ENROLLMENT
+// =========================
+
 async function deleteEnrollment(id){
 
-    if(!confirm("Drop this course?")){
+    const result = await Swal.fire({
+
+        title: "Drop this course?",
+
+        text: "This action cannot be undone",
+
+        icon: "warning",
+
+        showCancelButton: true,
+
+        confirmButtonText: "Yes, drop",
+
+        cancelButtonText: "Cancel"
+    })
+
+    if(!result.isConfirmed){
 
         return
     }
@@ -144,10 +155,18 @@ async function deleteEnrollment(id){
 
     const data = await response.json()
 
-    alert(data.message || data.error)
+    await Swal.fire({
+        icon: data.error ? "error" : "success",
+        title: data.error ? "Error" : "Success",
+        text: data.message || data.error
+    })
 
     loadEnrollments()
 }
+
+// =========================
+// NAVIGATION
+// =========================
 
 function goBack(){
 
@@ -163,8 +182,7 @@ function logout(){
 
 function goEnrollments(){
 
-    window.location.href =
-        "enrollments.html"
+    window.location.href = "enrollments.html"
 }
 
 loadEnrollments()

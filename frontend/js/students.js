@@ -14,6 +14,10 @@ if(user.role !== "admin"){
     ).style.display = "none"
 }
 
+// =========================
+// LOAD STUDENTS
+// =========================
+
 async function loadStudents(){
 
     const response = await fetch(
@@ -39,35 +43,28 @@ async function loadStudents(){
             <tr>
 
                 <td>${student.id_student}</td>
-
                 <td>${student.name_student}</td>
-
                 <td>${student.birthdate}</td>
-
                 <td>${student.gender}</td>
-
                 <td>${student.enrollment_year}</td>
-
                 <td>${student.id_department}</td>
 
                 <td>
 
                     ${
                         user.role === "admin"
-                        ?
+                        ? `
+                            <button class="btn btn-danger btn-sm"
+                                onclick="deleteStudent('${student.id_student}')">
+                                Delete
+                            </button>
 
+                            <button class="btn btn-primary btn-sm"
+                                onclick="editStudent('${student.id_student}')">
+                                Edit
+                            </button>
                         `
-                        <button onclick="deleteStudent('${student.id_student}')">
-                            Delete
-                        </button>
-
-                        <button onclick="editStudent('${student.id_student}')">
-                            Edit
-                        </button>
-                        `
-                        :
-
-                        ""
+                        : ""
                     }
 
                 </td>
@@ -76,6 +73,10 @@ async function loadStudents(){
         `
     })
 }
+
+// =========================
+// CREATE STUDENT
+// =========================
 
 async function createStudent(){
 
@@ -95,17 +96,11 @@ async function createStudent(){
 
         enrollment_year:
             parseInt(
-                document.getElementById(
-                    "enrollment_year"
-                ).value
+                document.getElementById("enrollment_year").value
             ),
 
         id_department:
-            parseInt(
-                document.getElementById(
-                    "id_department"
-                ).value
-            )
+            document.getElementById("id_department").value
     }
 
     const response = await fetch(
@@ -124,23 +119,36 @@ async function createStudent(){
 
     const data = await response.json()
 
-    alert(data.message || data.error)
+    await Swal.fire({
+        icon: data.error ? "error" : "success",
+        title: data.error ? "Error" : "Success",
+        text: data.message || data.error
+    })
 
     loadStudents()
 }
 
+// =========================
+// DELETE STUDENT
+// =========================
+
 async function deleteStudent(id){
 
-    if(!confirm("Delete student?")){
+    const result = await Swal.fire({
+        title: "Delete student?",
+        text: "This action cannot be undone",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete",
+        cancelButtonText: "Cancel"
+    })
 
-        return
-    }
+    if(!result.isConfirmed) return
 
     const response = await fetch(
         `http://127.0.0.1:5000/students/${id}`,
         {
             method: "DELETE",
-
             headers:{
                 "Role": user.role
             }
@@ -149,63 +157,69 @@ async function deleteStudent(id){
 
     const data = await response.json()
 
-    alert(data.message || data.error)
+    await Swal.fire({
+        icon: data.error ? "error" : "success",
+        title: data.error ? "Error" : "Success",
+        text: data.message || data.error
+    })
 
     loadStudents()
 }
 
+// =========================
+// EDIT STUDENT
+// =========================
+
 async function editStudent(id){
 
-    const newName = prompt(
-        "New student name:"
-    )
+    const { value: newName } = await Swal.fire({
+        title: "Edit student name",
+        input: "text",
+        inputPlaceholder: "Enter new student name",
+        showCancelButton: true
+    })
 
-    if(!newName){
-
-        return
-    }
+    if(!newName) return
 
     const response = await fetch(
         `http://127.0.0.1:5000/students/${id}`,
         {
             method: "PUT",
-
             headers:{
                 "Content-Type":"application/json",
                 "Role": user.role
             },
-
             body: JSON.stringify({
-
                 name_student: newName,
-
                 birthdate: "2000-01-01",
-
                 gender: "M",
-
                 enrollment_year: 2024,
-
-                id_department: 1
+                id_department: "D001"
             })
         }
     )
 
     const data = await response.json()
 
-    alert(data.message || data.error)
+    await Swal.fire({
+        icon: data.error ? "error" : "success",
+        title: data.error ? "Error" : "Success",
+        text: data.message || data.error
+    })
 
     loadStudents()
 }
 
-function goBack(){
+// =========================
+// NAVIGATION
+// =========================
 
+function goBack(){
     window.location.href = "dashboard.html"
 }
 
 function logout(){
-
     localStorage.removeItem("user")
-
     window.location.href = "login.html"
 }
 
