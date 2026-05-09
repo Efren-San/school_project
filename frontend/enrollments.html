@@ -1,70 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>Enrollments</title>
 
-    <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/layout.css">
+
 </head>
-<body>
 
-    <h1>Enrollments</h1>
+<body class="bg-dark text-light">
 
-    <button onclick="goBack()">
-        Back
-    </button>
+<div id="sidebar-container"></div>
+<script src="components/sidebar.js"></script>
 
-    <button onclick="logout()">
-        Logout
-    </button>
+<div class="main-content">
+    <div id="header-container"></div>
+    <script src="components/header.js"></script>
+    <!-- HEADER -->
 
-    <hr>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold">
+                Enrollments
+            </h1>
 
-    <div id="form-container">
+            <p class="text-secondary mb-0">
+                Student course enrollments
+            </p>
+        </div>
 
-        <h2>Enroll Student</h2>
+        <div>
 
-        <input type="text"
-               id="id_student"
-               placeholder="Student ID">
+            <button class="btn btn-secondary me-2"
+                    onclick="goBack()">
+                Dashboard
+            </button>
 
-        <input type="number"
-               id="id_course"
-               placeholder="Course ID">
+            <button class="btn btn-danger"
+                    onclick="logout()">
+                Logout
+            </button>
 
-        <input type="text"
-               id="semester"
-               placeholder="Semester">
-
-        <button onclick="createEnrollment()">
-            Enroll
-        </button>
+        </div>
 
     </div>
 
-    <hr>
+    <!-- FORM -->
 
-    <table border="1" width="100%">
+    <div id="form-container"
+         class="card bg-secondary border-0 shadow p-4 mb-4">
 
-        <thead>
+        <h4 class="mb-3">
+            Create Enrollment
+        </h4>
 
-            <tr>
-                <th>ID</th>
-                <th>Student</th>
-                <th>Course</th>
-                <th>Semester</th>
-                <th>Actions</th>
-            </tr>
+        <div class="row g-3">
 
-        </thead>
+            <div class="col-md-4">
 
-        <tbody id="enrollment-body">
+                <label class="form-label">
+                    Student ID
+                </label>
 
-        </tbody>
+                <input type="text"
+                       id="id_student"
+                       class="form-control"
+                       placeholder="S001">
 
-    </table>
+            </div>
 
-    <script src="js/enrollments.js"></script>
+            <div class="col-md-4">
+
+                <label class="form-label">
+                    Course ID
+                </label>
+
+                <input type="text"
+                       id="id_course"
+                       class="form-control"
+                       placeholder="C001">
+
+            </div>
+
+            <div class="col-md-4">
+
+                <label class="form-label">
+                    Semester
+                </label>
+
+                <input type="text"
+                       id="semester"
+                       class="form-control"
+                       placeholder="2026-A">
+
+            </div>
+
+        </div>
+
+        <div class="mt-4">
+
+            <button class="btn btn-success"
+                    onclick="createEnrollment()">
+                Create Enrollment
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- TABLE -->
+
+    <div class="card bg-secondary border-0 shadow">
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-dark table-hover align-middle">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Student</th>
+
+                            <th>Course</th>
+
+                            <th>Enrollment Date</th>
+
+                            <th>Semester</th>
+
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="enrollment-body">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="js/enrollments.js"></script>
 
 </body>
 </html>

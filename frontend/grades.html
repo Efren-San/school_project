@@ -1,33 +1,443 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>Grades</title>
+
+    <link rel="stylesheet" href="css/layout.css">
+
 </head>
-<body>
 
-    <h1>Grades</h1>
+<body class="bg-dark text-light">
 
-    <button onclick="goBack()">
-        Back
-    </button>
+<div id="sidebar-container"></div>
+<script src="components/sidebar.js"></script>
 
-    <table border="1" width="100%">
+<div class="main-content">
+    <div id="header-container"></div>
+    <script src="components/header.js"></script>
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <thead>
+        <div>
+
+            <h1 class="fw-bold">
+                Grades
+            </h1>
+
+            <p class="mb-0" id="role-info"></p>
+
+        </div>
+
+        <div>
+
+            <button class="btn btn-secondary me-2"
+                    onclick="goBack()">
+                Dashboard
+            </button>
+
+            <button class="btn btn-danger"
+                    onclick="logout()">
+                Logout
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- FORM -->
+
+    <div class="card bg-secondary border-0 shadow mb-4"
+         id="form-container">
+
+        <div class="card-body">
+
+            <h3 class="mb-3">
+                Add Grade
+            </h3>
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+
+                    <input type="number"
+                           id="id_enrollment"
+                           class="form-control"
+                           placeholder="Enrollment ID">
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <input type="number"
+                           id="final_grade"
+                           class="form-control"
+                           placeholder="Final Grade">
+
+                </div>
+
+                <div class="col-md-12">
+
+                    <button class="btn btn-primary w-100"
+                            onclick="createGrade()">
+                        Save Grade
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- TABLE -->
+
+    <div class="card bg-secondary border-0 shadow">
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-dark table-hover align-middle mb-0">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Student</th>
+
+                            <th>Course</th>
+
+                            <th>Final Grade</th>
+
+                            <th>GPA</th>
+
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="grades-body">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const API_URL = "http://127.0.0.1:5000"
+
+const user = JSON.parse(
+    localStorage.getItem("user")
+)
+
+if(!user){
+
+    window.location.href =
+        "./login.html"
+}
+
+document.getElementById("role-info").innerText =
+    `Logged as ${user.role}`
+
+
+// =========================
+// ROLE CONTROL
+// =========================
+
+if(
+    user.role !== "admin"
+    &&
+    user.role !== "teacher"
+){
+
+    document.getElementById(
+        "form-container"
+    ).style.display = "none"
+}
+
+
+// =========================
+// LOAD GRADES
+// =========================
+
+async function loadGrades(){
+
+    try{
+
+        const response = await fetch(
+            API_URL + "/grades",
+            {
+                headers:{
+                    "Role": user.role
+                }
+            }
+        )
+
+        const data = await response.json()
+
+        const table =
+            document.getElementById(
+                "grades-body"
+            )
+
+        table.innerHTML = ""
+
+        data.forEach(grade => {
+
+            table.innerHTML += `
+            
             <tr>
-                <th>Student</th>
-                <th>Course</th>
-                <th>Grade</th>
-                <th>GPA</th>
+
+                <td>${grade.id_grade}</td>
+
+                <td>${grade.student}</td>
+
+                <td>${grade.course}</td>
+
+                <td>${grade.final_grade}</td>
+
+                <td>${grade.gpa}</td>
+
+                <td>
+
+                    ${
+                        user.role === "admin"
+                        ||
+                        user.role === "teacher"
+
+                        ?
+
+                        `
+                        <button
+                            class="btn btn-warning btn-sm me-1"
+                            onclick="editGrade(${grade.id_grade})"
+                        >
+                            Edit
+                        </button>
+
+                        ${
+                            user.role === "admin"
+
+                            ?
+
+                            `
+                            <button
+                                class="btn btn-danger btn-sm"
+                                onclick="deleteGrade(${grade.id_grade})"
+                            >
+                                Delete
+                            </button>
+                            `
+
+                            :
+
+                            ""
+                        }
+                        `
+
+                        :
+
+                        "-"
+                    }
+
+                </td>
+
             </tr>
-        </thead>
+            `
+        })
 
-        <tbody id="grades-body"></tbody>
+    }catch(error){
 
-    </table>
+        console.log(error)
+    }
+}
 
-    <script src="js/grades.js"></script>
+
+// =========================
+// CREATE GRADE
+// =========================
+
+async function createGrade(){
+
+    const grade = {
+
+        id_enrollment:
+            parseInt(
+                document.getElementById(
+                    "id_enrollment"
+                ).value
+            ),
+
+        final_grade:
+            parseFloat(
+                document.getElementById(
+                    "final_grade"
+                ).value
+            )
+    }
+
+    try{
+
+        const response = await fetch(
+            API_URL + "/grades",
+            {
+                method: "POST",
+
+                headers:{
+                    "Content-Type":
+                        "application/json",
+
+                    "Role": user.role
+                },
+
+                body: JSON.stringify(grade)
+            }
+        )
+
+        const data = await response.json()
+
+        alert(data.message || data.error)
+
+        loadGrades()
+
+    }catch(error){
+
+        console.log(error)
+    }
+}
+
+
+// =========================
+// EDIT GRADE
+// =========================
+
+async function editGrade(id){
+
+    const newGrade = prompt(
+        "New final grade:"
+    )
+
+    if(!newGrade){
+
+        return
+    }
+
+    try{
+
+        const response = await fetch(
+            API_URL + "/grades/" + id,
+            {
+                method: "PUT",
+
+                headers:{
+                    "Content-Type":
+                        "application/json",
+
+                    "Role": user.role
+                },
+
+                body: JSON.stringify({
+                    final_grade:
+                        parseFloat(newGrade)
+                })
+            }
+        )
+
+        const data = await response.json()
+
+        alert(data.message || data.error)
+
+        loadGrades()
+
+    }catch(error){
+
+        console.log(error)
+    }
+}
+
+
+// =========================
+// DELETE GRADE
+// =========================
+
+async function deleteGrade(id){
+
+    if(!confirm("Delete grade?")){
+
+        return
+    }
+
+    try{
+
+        const response = await fetch(
+            API_URL + "/grades/" + id,
+            {
+                method: "DELETE",
+
+                headers:{
+                    "Role": user.role
+                }
+            }
+        )
+
+        const data = await response.json()
+
+        alert(data.message || data.error)
+
+        loadGrades()
+
+    }catch(error){
+
+        console.log(error)
+    }
+}
+
+
+// =========================
+// NAVIGATION
+// =========================
+
+function goBack(){
+
+    window.location.href =
+        "./dashboard.html"
+}
+
+function logout(){
+
+    localStorage.removeItem("user")
+
+    window.location.href =
+        "./login.html"
+}
+
+
+// =========================
+// INIT
+// =========================
+
+loadGrades()
+
+</script>
 
 </body>
 </html>

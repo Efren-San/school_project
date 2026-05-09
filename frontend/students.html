@@ -1,80 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
     <meta charset="UTF-8">
 
-    <title>
-        Students
-    </title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Students</title>
+
+    <link rel="stylesheet" href="css/layout.css">
 
 </head>
 
-<body>
+<body class="bg-dark text-light">
 
-    <h1>
-        Students
-    </h1>
+<div id="sidebar-container"></div>
+<script src="components/sidebar.js"></script>
 
-    <button onclick="goDashboard()">
-        Back
-    </button>
+<div class="main-content">
+    <div id="header-container"></div>
+    <script src="components/header.js"></script>
+    <!-- HEADER -->
 
-    <button onclick="loadStudents()">
-        Reload
-    </button>
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-    <hr>
+        <div>
 
-    <h2>
-        Create Student
-    </h2>
+            <h1 class="fw-bold">
+                Students
+            </h1>
 
-    <input type="text" id="id_student" placeholder="Student ID">
+            <p class="mb-0" id="role-info"></p>
 
-    <input type="text" id="name_student" placeholder="Student Name">
+        </div>
 
-    <input type="date" id="birthdate">
+        <div>
 
-    <input type="text" id="gender" placeholder="M/F">
+            <button class="btn btn-secondary me-2"
+                    onclick="goBack()">
+                Dashboard
+            </button>
 
-    <input type="number" id="enrollment_year" placeholder="2026">
+            <button class="btn btn-danger"
+                    onclick="logout()">
+                Logout
+            </button>
 
-    <input type="number" id="id_department" placeholder="Department ID">
+        </div>
 
-    <button onclick="createStudent()">
-        Create
-    </button>
+    </div>
 
-    <hr>
+    <!-- FORM -->
 
-    <table border="1">
+    <div class="card bg-secondary border-0 shadow mb-4"
+         id="form-container">
 
-        <thead>
+        <div class="card-body">
 
-            <tr>
+            <h3 class="mb-3">
+                Create Student
+            </h3>
 
-                <th>ID</th>
+            <div class="row g-3">
 
-                <th>Name</th>
+                <div class="col-md-4">
 
-                <th>Birthdate</th>
+                    <input type="text"
+                           id="id_student"
+                           class="form-control"
+                           placeholder="Student ID">
 
-                <th>Gender</th>
+                </div>
 
-                <th>Year</th>
+                <div class="col-md-4">
 
-                <th>Department</th>
+                    <input type="text"
+                           id="name_student"
+                           class="form-control"
+                           placeholder="Student Name">
 
-            </tr>
+                </div>
 
-        </thead>
+                <div class="col-md-4">
 
-        <tbody id="studentsTable">
+                    <input type="date"
+                           id="birthdate"
+                           class="form-control">
 
-        </tbody>
+                </div>
 
-    </table>
+                <div class="col-md-3">
+
+                    <input type="text"
+                           id="gender"
+                           class="form-control"
+                           placeholder="M/F">
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <input type="number"
+                           id="enrollment_year"
+                           class="form-control"
+                           placeholder="Enrollment Year">
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <input type="text"
+                           id="id_department"
+                           class="form-control"
+                           placeholder="Department ID">
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <button class="btn btn-primary w-100"
+                            onclick="createStudent()">
+                        Create
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- TABLE -->
+
+    <div class="card bg-secondary border-0 shadow">
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-dark table-hover align-middle mb-0">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Name</th>
+
+                            <th>Birthdate</th>
+
+                            <th>Gender</th>
+
+                            <th>Year</th>
+
+                            <th>Department</th>
+
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="students-body">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 <script>
 
@@ -86,8 +189,29 @@ const user = JSON.parse(
 
 if(!user){
 
-    window.location.href = "login.html"
+    window.location.href =
+        "./login.html"
 }
+
+document.getElementById("role-info").innerText =
+    `Logged as ${user.role}`
+
+
+// =========================
+// ROLE CONTROL
+// =========================
+
+if(user.role !== "admin"){
+
+    document.getElementById(
+        "form-container"
+    ).style.display = "none"
+}
+
+
+// =========================
+// LOAD STUDENTS
+// =========================
 
 async function loadStudents(){
 
@@ -106,7 +230,7 @@ async function loadStudents(){
 
         const table =
             document.getElementById(
-                "studentsTable"
+                "students-body"
             )
 
         table.innerHTML = ""
@@ -114,21 +238,52 @@ async function loadStudents(){
         data.forEach(student => {
 
             table.innerHTML += `
-                <tr>
+            
+            <tr>
 
-                    <td>${student.id_student}</td>
+                <td>${student.id_student}</td>
 
-                    <td>${student.name_student}</td>
+                <td>${student.name_student}</td>
 
-                    <td>${student.birthdate}</td>
+                <td>${student.birthdate}</td>
 
-                    <td>${student.gender}</td>
+                <td>${student.gender}</td>
 
-                    <td>${student.enrollment_year}</td>
+                <td>${student.enrollment_year}</td>
 
-                    <td>${student.id_department}</td>
+                <td>${student.id_department}</td>
 
-                </tr>
+                <td>
+
+                    ${
+                        user.role === "admin"
+
+                        ?
+
+                        `
+                        <button
+                            class="btn btn-warning btn-sm me-1"
+                            onclick="editStudent('${student.id_student}')"
+                        >
+                            Edit
+                        </button>
+
+                        <button
+                            class="btn btn-danger btn-sm"
+                            onclick="deleteStudent('${student.id_student}')"
+                        >
+                            Delete
+                        </button>
+                        `
+
+                        :
+
+                        "-"
+                    }
+
+                </td>
+
+            </tr>
             `
         })
 
@@ -138,27 +293,46 @@ async function loadStudents(){
     }
 }
 
+
+// =========================
+// CREATE STUDENT
+// =========================
+
 async function createStudent(){
 
     const student = {
 
         id_student:
-            document.getElementById("id_student").value,
+            document.getElementById(
+                "id_student"
+            ).value,
 
         name_student:
-            document.getElementById("name_student").value,
+            document.getElementById(
+                "name_student"
+            ).value,
 
         birthdate:
-            document.getElementById("birthdate").value,
+            document.getElementById(
+                "birthdate"
+            ).value,
 
         gender:
-            document.getElementById("gender").value,
+            document.getElementById(
+                "gender"
+            ).value,
 
         enrollment_year:
-            document.getElementById("enrollment_year").value,
+            parseInt(
+                document.getElementById(
+                    "enrollment_year"
+                ).value
+            ),
 
         id_department:
-            document.getElementById("id_department").value
+            document.getElementById(
+                "id_department"
+            ).value
     }
 
     try{
@@ -191,10 +365,123 @@ async function createStudent(){
     }
 }
 
-function goDashboard(){
 
-    window.location.href = "dashboard.html"
+// =========================
+// DELETE STUDENT
+// =========================
+
+async function deleteStudent(id){
+
+    if(!confirm("Delete student?")){
+
+        return
+    }
+
+    try{
+
+        const response = await fetch(
+            API_URL + "/students/" + id,
+            {
+                method: "DELETE",
+
+                headers:{
+                    "Role": user.role
+                }
+            }
+        )
+
+        const data = await response.json()
+
+        alert(data.message || data.error)
+
+        loadStudents()
+
+    }catch(error){
+
+        console.log(error)
+    }
 }
+
+
+// =========================
+// EDIT STUDENT
+// =========================
+
+async function editStudent(id){
+
+    const newName = prompt(
+        "New student name:"
+    )
+
+    if(!newName){
+
+        return
+    }
+
+    try{
+
+        const response = await fetch(
+            API_URL + "/students/" + id,
+            {
+                method: "PUT",
+
+                headers:{
+                    "Content-Type":
+                        "application/json",
+
+                    "Role": user.role
+                },
+
+                body: JSON.stringify({
+
+                    name_student: newName,
+
+                    birthdate: "2000-01-01",
+
+                    gender: "M",
+
+                    enrollment_year: 2024,
+
+                    id_department: "D001"
+                })
+            }
+        )
+
+        const data = await response.json()
+
+        alert(data.message || data.error)
+
+        loadStudents()
+
+    }catch(error){
+
+        console.log(error)
+    }
+}
+
+
+// =========================
+// NAVIGATION
+// =========================
+
+function goBack(){
+
+    window.location.href =
+        "./dashboard.html"
+}
+
+function logout(){
+
+    localStorage.removeItem("user")
+
+    window.location.href =
+        "./login.html"
+}
+
+
+// =========================
+// INIT
+// =========================
 
 loadStudents()
 

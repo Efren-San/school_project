@@ -1,75 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/layout.css">
+
 </head>
+
 <body>
 
-    <h1>Dashboard</h1>
+<div id="sidebar-container"></div>
+<script src="components/sidebar.js"></script>
 
-    <p id="role"></p>
+<div class="main-content">
 
-    <button onclick="goStudents()">
-        Students
-    </button>
+    <div id="header-container"></div>
+    <script src="components/header.js"></script>
 
-    <button onclick="goCourses()">
-        Courses
-    </button>
+    <!-- CARDS -->
 
-    <button onclick="goGrades()">
-        Grades
-    </button>
+    <div class="cards">
 
-    <button onclick="logout()">
-    Logout
-    </button>
+        <div class="card-box">
 
-    <button onclick="goEnrollments()">
-    Enrollments
-    </button>
+            <h3>
+                Students
+            </h3>
+
+            <p>
+                11
+            </p>
+
+        </div>
+
+        <div class="card-box">
+
+            <h3>
+                Courses
+            </h3>
+
+            <p>
+                11
+            </p>
+
+        </div>
+
+        <div class="card-box">
+
+            <h3>
+                Enrollments
+            </h3>
+
+            <p>
+                11
+            </p>
+
+        </div>
+
+        <div class="card-box">
+
+            <h3>
+                Average GPA
+            </h3>
+
+            <p>
+                3.2
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- TABLE -->
+
+    <div class="table-container">
+
+        <h2 style="margin-bottom:20px;">
+            Recent Activity
+        </h2>
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>User</th>
+
+                    <th>Action</th>
+
+                    <th>Date</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+
+                    <td>
+                        Admin
+                    </td>
+
+                    <td>
+                        Created student
+                    </td>
+
+                    <td>
+                        Today
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td>
+                        Teacher
+                    </td>
+
+                    <td>
+                        Updated grade
+                    </td>
+
+                    <td>
+                        Today
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
 
 <script>
 
-    const user = JSON.parse(
-        localStorage.getItem("user")
-    )
+function logout(){
 
-    if(!user){
+    localStorage.removeItem("user")
 
-        window.location.href = "./login.html"
-    }
-
-    document.getElementById("role").innerText =
-        "Role: " + user.role
-
-    if(user.role === "student"){
-
-        document.write("<p>Student Mode</p>")
-    }
-
-    function goStudents(){
-        window.location.href = "./students.html"
-    }
-
-    function goCourses(){
-        window.location.href = "./courses.html"
-    }
-
-    function goGrades(){
-        window.location.href = "./grades.html"
-    }
-
-    function goEnrollments(){
-        window.location.href = "./enrollments.html"
-    }
-
-    function logout(){
-        localStorage.removeItem("user")
-        window.location.href = "./login.html"
-    }
+    window.location.href =
+        "login.html"
+}
 
 </script>
 
