@@ -8,7 +8,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Transcript</title>
+    <title>Department Ranking</title>
 
     <link rel="stylesheet" href="css/layout.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -29,7 +29,7 @@
         <div>
 
             <h1 class="fw-bold">
-                Transcript
+                Department Ranking
             </h1>
 
             <p class="mb-0" id="role-info"></p>
@@ -52,35 +52,6 @@
 
     </div>
 
-    <!-- SUMMARY CARDS -->
-    <div class="row g-3 mb-4">
-
-        <div class="col-md-6">
-
-            <div class="card bg-secondary border-0 shadow p-3">
-
-                <h6>Total Credits</h6>
-
-                <h2 id="total-credits">0</h2>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-6">
-
-            <div class="card bg-secondary border-0 shadow p-3">
-
-                <h6>Average GPA</h6>
-
-                <h2 id="avg-gpa">0.00</h2>
-
-            </div>
-
-        </div>
-
-    </div>
-
     <!-- TABLE -->
     <div class="card bg-secondary border-0 shadow">
 
@@ -94,19 +65,19 @@
 
                         <tr>
 
-                            <th>Course</th>
+                            <th>Rank</th>
 
-                            <th>Credits</th>
+                            <th>Department</th>
 
-                            <th>Final Grade</th>
+                            <th>Total Students</th>
 
-                            <th>GPA Points</th>
+                            <th>Average GPA</th>
 
                         </tr>
 
                     </thead>
 
-                    <tbody id="transcript-table">
+                    <tbody id="ranking-body">
 
                     </tbody>
 
@@ -124,70 +95,67 @@
 
 const API_URL = "http://127.0.0.1:5000"
 
-const user = JSON.parse(
-    localStorage.getItem("user")
-)
+const user = JSON.parse(localStorage.getItem("user"))
 
 if(!user){
-
-    window.location.href =
-        "./login.html"
+    window.location.href = "./login.html"
 }
 
 document.getElementById("role-info").innerText =
     `Logged as ${user.role}`
 
-const studentId =
-    user.id_student || user.id
-
 
 // =========================
-// LOAD TRANSCRIPT
+// LOAD RANKING
 // =========================
-async function loadTranscript(){
+async function loadRanking(){
 
     try{
 
-        const response =
-            await fetch(
-                `${API_URL}/transcript/${studentId}`,
-                {
-                    headers:{
-                        "Role": user.role,
-                        "Student-Id": user.id_student || "",
-                        "Instructor-Id": user.id_instructor || ""
-                    }
+        const response = await fetch(
+            API_URL + "/departments/ranking",
+            {
+                headers:{
+                    "Role": user.role
                 }
-            )
+            }
+        )
 
         const data = await response.json()
 
-        document.getElementById("total-credits").innerText =
-            data.total_credits
-
-        document.getElementById("avg-gpa").innerText =
-            data.avg_gpa
-
-        const table =
-            document.getElementById("transcript-table")
+        const table = document.getElementById("ranking-body")
 
         table.innerHTML = ""
 
-        data.transcript.forEach(item => {
+        let rank = 1
+
+        data.forEach(dep => {
+
+            let badge = ""
+
+            if(rank === 1){
+                badge = "🥇"
+            }else if(rank === 2){
+                badge = "🥈"
+            }else if(rank === 3){
+                badge = "🥉"
+            }
 
             table.innerHTML += `
                 <tr>
-                    <td>${item.course}</td>
-                    <td>${item.credits}</td>
-                    <td>${item.final_grade}</td>
-                    <td>${item.gpa_points}</td>
+                    <td>${badge} ${rank}</td>
+                    <td>${dep.name_department}</td>
+                    <td>${dep.total_students}</td>
+                    <td>${dep.avg_gpa}</td>
                 </tr>
             `
+
+            rank++
         })
 
     }catch(error){
 
-        console.log("Transcript error:", error)
+        console.log("Ranking error:", error)
     }
 }
 
@@ -196,22 +164,17 @@ async function loadTranscript(){
 // NAVIGATION
 // =========================
 function goBack(){
-
-    window.location.href =
-        "./dashboard.html"
+    window.location.href = "./dashboard.html"
 }
 
 function logout(){
-
     localStorage.removeItem("user")
-
-    window.location.href =
-        "./login.html"
+    window.location.href = "./login.html"
 }
 
 
 // INIT
-loadTranscript()
+loadRanking()
 
 </script>
 

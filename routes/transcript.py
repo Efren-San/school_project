@@ -4,10 +4,6 @@ from utils.auth import require_role
 
 transcript_bp = Blueprint("transcript", __name__)
 
-# =========================
-# F06 - STUDENT TRANSCRIPT
-# =========================
-
 @transcript_bp.route("/transcript/<student_id>", methods=["GET"])
 @require_role(["admin", "teacher", "student"])
 def get_transcript(student_id):
@@ -22,7 +18,7 @@ def get_transcript(student_id):
         NAME_COURSE,
         CREDITS,
         FINAL_GRADE,
-        GPA_POINTS
+        GPA
     FROM VW_STUDENT_TRANSCRIPT
     WHERE ID_STUDENT = ?
     """
@@ -31,7 +27,6 @@ def get_transcript(student_id):
     rows = cursor.fetchall()
 
     transcript = []
-
     total_credits = 0
     total_gpa = 0
 
@@ -49,10 +44,7 @@ def get_transcript(student_id):
         total_credits += row[3]
         total_gpa += row[5]
 
-    avg_gpa = 0
-
-    if rows:
-        avg_gpa = round(total_gpa / len(rows), 2)
+    avg_gpa = round(total_gpa / len(rows), 2) if rows else 0
 
     conn.close()
 

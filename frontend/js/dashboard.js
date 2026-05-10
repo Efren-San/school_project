@@ -28,7 +28,6 @@ async function loadDashboard(){
         )
 
         const data = await response.json()
-
         // =========================
         // STATS RENDER
         // =========================
