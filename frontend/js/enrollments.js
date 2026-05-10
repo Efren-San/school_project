@@ -1,109 +1,93 @@
-const user = JSON.parse(
-    localStorage.getItem("user")
-)
+const user = JSON.parse(localStorage.getItem("user"))
 
-if(!user){
-
+// =========================
+// AUTH GUARD
+// =========================
+if (!user) {
     window.location.href = "login.html"
 }
 
-if(
-    user.role !== "admin"
-    &&
-    user.role !== "teacher"
-){
+// =========================
+// API BASE
+// =========================
+const API = "http://127.0.0.1:5000"
 
-    document.getElementById(
-        "form-container"
-    ).style.display = "none"
+// =========================
+// ROLE UI CONTROL
+// =========================
+if (user.role !== "admin" && user.role !== "teacher") {
+    const form = document.getElementById("form-container")
+    if (form) form.style.display = "none"
 }
 
 // =========================
 // LOAD ENROLLMENTS
 // =========================
+async function loadEnrollments() {
 
-async function loadEnrollments(){
+    try {
 
-    const response = await fetch(
-        "http://127.0.0.1:5000/enrollments",
-        {
-            headers:{
+        const response = await fetch(`${API}/enrollments`, {
+            headers: {
                 "Role": user.role
             }
-        }
-    )
+        })
 
-    const data = await response.json()
+        const data = await response.json()
 
-    const table = document.getElementById(
-        "enrollment-body"
-    )
+        const table = document.getElementById("enrollment-body")
+        table.innerHTML = ""
 
-    table.innerHTML = ""
+        data.forEach(enrollment => {
 
-    data.forEach(enrollment => {
+            table.innerHTML += `
+                <tr>
+                    <td>${enrollment.id_enrollment}</td>
+                    <td>${enrollment.student}</td>
+                    <td>${enrollment.course}</td>
+                    <td>${enrollment.enrollment_date}</td>
+                    <td>${enrollment.semester}</td>
 
-        table.innerHTML += `
-            <tr>
+                    <td>
+                        ${
+                            user.role === "admin" || user.role === "teacher"
+                                ? `
+                                    <button class="btn btn-danger btn-sm"
+                                        onclick="deleteEnrollment(${enrollment.id_enrollment})">
+                                        Drop
+                                    </button>
+                                `
+                                : "-"
+                        }
+                    </td>
+                </tr>
+            `
+        })
 
-                <td>${enrollment.id_enrollment}</td>
-                <td>${enrollment.student}</td>
-                <td>${enrollment.course}</td>
-                <td>${enrollment.enrollment_date}</td>
-                <td>${enrollment.semester}</td>
-
-                <td>
-
-                    ${
-                        user.role === "admin"
-                        || user.role === "teacher"
-                        ? `
-                            <button
-                                class="btn btn-danger btn-sm"
-                                onclick="deleteEnrollment(${enrollment.id_enrollment})">
-                                Drop
-                            </button>
-                        `
-                        : ""
-                    }
-
-                </td>
-            </tr>
-        `
-    })
+    } catch (error) {
+        console.error("Error loading enrollments:", error)
+    }
 }
 
 // =========================
 // CREATE ENROLLMENT
 // =========================
-
-async function createEnrollment(){
+async function createEnrollment() {
 
     const enrollment = {
-
-        id_student:
-            document.getElementById("id_student").value,
-
-        id_course:
-            document.getElementById("id_course").value,
-
-        semester:
-            document.getElementById("semester").value
+        id_student: document.getElementById("id_student").value,
+        id_course: document.getElementById("id_course").value,
+        semester: document.getElementById("semester").value
     }
 
-    const response = await fetch(
-        "http://127.0.0.1:5000/enrollments",
-        {
-            method: "POST",
-
-            headers:{
-                "Content-Type":"application/json",
-                "Role": user.role
-            },
-
-            body: JSON.stringify(enrollment)
-        }
-    )
+    const response = await fetch(`${API}/enrollments`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Role": user.role
+        },
+        body: JSON.stringify(enrollment)
+    })
 
     const data = await response.json()
 
@@ -119,39 +103,25 @@ async function createEnrollment(){
 // =========================
 // DELETE ENROLLMENT
 // =========================
-
-async function deleteEnrollment(id){
+async function deleteEnrollment(id) {
 
     const result = await Swal.fire({
-
         title: "Drop this course?",
-
         text: "This action cannot be undone",
-
         icon: "warning",
-
         showCancelButton: true,
-
         confirmButtonText: "Yes, drop",
-
         cancelButtonText: "Cancel"
     })
 
-    if(!result.isConfirmed){
+    if (!result.isConfirmed) return
 
-        return
-    }
-
-    const response = await fetch(
-        `http://127.0.0.1:5000/enrollments/${id}`,
-        {
-            method: "DELETE",
-
-            headers:{
-                "Role": user.role
-            }
+    const response = await fetch(`${API}/enrollments/${id}`, {
+        method: "DELETE",
+        headers: {
+            "Role": user.role
         }
-    )
+    })
 
     const data = await response.json()
 
@@ -165,24 +135,30 @@ async function deleteEnrollment(id){
 }
 
 // =========================
-// NAVIGATION
+// NAVIGATION (UNIFIED DASHBOARD)
 // =========================
 
-function goBack(){
-
+// 🔥 DASHBOARD ÚNICO
+function goBack() {
     window.location.href = "dashboard.html"
 }
 
-function logout(){
-
+// =========================
+// LOGOUT
+// =========================
+function logout() {
     localStorage.removeItem("user")
-
     window.location.href = "login.html"
 }
 
-function goEnrollments(){
-
+// =========================
+// OPTIONAL NAV (si lo usas)
+// =========================
+function goEnrollments() {
     window.location.href = "enrollments.html"
 }
 
+// =========================
+// INIT
+// =========================
 loadEnrollments()

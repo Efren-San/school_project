@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, jsonify
 from db import get_connection
 from utils.auth import require_role
 
@@ -9,19 +9,22 @@ students_bp = Blueprint("students", __name__)
 # =========================
 
 @students_bp.route("/students", methods=["GET"])
+@require_role(["admin", "teacher"])
 def get_students():
 
-    # SOLO admin y teacher pueden ver todos los estudiantes
-    auth = require_role(["admin", "teacher"])
-
-    if auth:
-        return auth
-
     conn = get_connection()
-
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM STUDENTS")
+    cursor.execute("""
+        SELECT
+            ID_STUDENT,
+            NAME_STUDENT,
+            BIRTHDATE,
+            GENDER,
+            ENROLLMENT_YEAR,
+            ID_DEPARTMENT
+        FROM STUDENTS
+    """)
 
     rows = cursor.fetchall()
 
@@ -40,7 +43,7 @@ def get_students():
 
     conn.close()
 
-    return students
+    return jsonify(students)
 
 
 # =========================

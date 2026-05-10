@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, jsonify
 from db import get_connection
 from utils.auth import require_role
 
@@ -9,50 +9,46 @@ enrollments_bp = Blueprint("enrollments", __name__)
 # =========================
 
 @enrollments_bp.route("/enrollments", methods=["GET"])
+@require_role(["admin", "teacher"])
 def get_enrollments():
 
-    # admin y teacher pueden ver enrollments
-    auth = require_role(["admin", "teacher"])
-
-    if auth:
-        return auth
-
     conn = get_connection()
-
     cursor = conn.cursor()
 
     query = """
-
     SELECT
-    	E.ID_ENROLLMENT,
-    	E.ID_STUDENT,
-    	E.ID_COURSE,
-    	S.NAME_STUDENT,
-    	C.NAME_COURSE,
-    	E.ENROLLMENT_DATE,
-    	E.SEMESTER
-   FROM ENROLLMENT E
-   INNER JOIN STUDENTS S ON E.ID_STUDENT = S.ID_STUDENT
-   INNER JOIN COURSE C ON E.ID_COURSE = C.ID_COURSE
+        E.ID_ENROLLMENT,
+        E.ID_STUDENT,
+        E.ID_COURSE,
+        S.NAME_STUDENT,
+        C.NAME_COURSE,
+        E.ENROLLMENT_DATE,
+        E.SEMESTER
+    FROM ENROLLMENT E
+    INNER JOIN STUDENTS S ON E.ID_STUDENT = S.ID_STUDENT
+    INNER JOIN COURSE C ON E.ID_COURSE = C.ID_COURSE
     """
 
     cursor.execute(query)
-
     rows = cursor.fetchall()
 
     enrollments = []
 
     for row in rows:
-    	enrollments.append({
-      	 "id_enrollment": row[0],
-      	 "student": row[1],
-       	 "course": row[2],
-       	 "enrollment_date": str(row[3]),
-       	 "semester": row[4]
-   	 })
+
+        enrollments.append({
+            "id_enrollment": row[0],
+            "id_student": row[1],
+            "id_course": row[2],
+            "student": row[3],
+            "course": row[4],
+            "enrollment_date": str(row[5]),
+            "semester": row[6]
+        })
+
     conn.close()
 
-    return enrollments
+    return jsonify(enrollments)
 
 
 # =========================

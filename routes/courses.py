@@ -1,29 +1,32 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from db import get_connection
 from utils.auth import require_role
 
 courses_bp = Blueprint("courses", __name__)
 
 # =========================
-# GET ALL COURSES
+# GET COURSES
 # =========================
 
 @courses_bp.route("/courses", methods=["GET"])
+@require_role(["admin", "teacher", "student"])
 def get_courses():
 
-    # admin, teacher y student pueden ver cursos
-    auth = require_role(["admin", "teacher", "student"])
-
-    if auth:
-        return auth
-
     conn = get_connection()
-
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM COURSE")
+    cursor.execute("""
+        SELECT
+            ID_COURSE,
+            NAME_COURSE,
+            CREDITS,
+            SEMESTER
+        FROM COURSE
+    """)
 
     rows = cursor.fetchall()
+
+    conn.close()
 
     courses = []
 
@@ -33,16 +36,10 @@ def get_courses():
             "id_course": row[0],
             "name_course": row[1],
             "credits": row[2],
-            "id_instructor": row[3],
-            "id_department": row[4],
-            "semester": row[5],
-            "capacity": row[6]
+            "semester": row[3]
         })
 
-    conn.close()
-
-    return courses
-
+    return jsonify(courses)
 
 # =========================
 # GET ONE COURSE

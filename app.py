@@ -7,6 +7,7 @@ from routes.grades import grades_bp
 from routes.auth import auth_bp
 from routes.enrollments import enrollments_bp
 from routes.stats import stats_bp
+from routes.transcript import transcript_bp
 
 app = Flask(__name__)
 
@@ -18,6 +19,7 @@ app.register_blueprint(grades_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(enrollments_bp)
 app.register_blueprint(stats_bp)
+app.register_blueprint(transcript_bp)
 
 @app.route("/")
 def home():

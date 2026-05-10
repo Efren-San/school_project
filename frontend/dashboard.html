@@ -2,143 +2,131 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
     <title>Dashboard</title>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/layout.css">
-
 </head>
 
-<body>
-
-<div id="sidebar-container"></div>
-<script src="components/sidebar.js"></script>
+<body class="bg-dark text-light">
 
 <div class="main-content">
 
+    <!-- HEADER -->
     <div id="header-container"></div>
     <script src="components/header.js"></script>
 
-    <!-- CARDS -->
+    <div class="container py-4">
 
-    <div class="cards">
+        <!-- TITLE -->
+        <div class="mb-4">
+            <h1 class="fw-bold">Dashboard</h1>
 
-    <div class="card-box">
+            <p id="welcome" class="text-muted"></p>
+        </div>
 
-        <h3>
-            Students
-        </h3>
+        <!-- STATS -->
+        <div class="row g-3 mb-4">
 
-        <p id="students-count">
-            0
-        </p>
+            <!-- CARD 1 -->
+            <div class="col-md-3">
 
-    </div>
+                <div class="card bg-secondary border-0 shadow p-3">
 
-    <div class="card-box">
+                    <h6 id="metric1-title">
+                        Metric 1
+                    </h6>
 
-        <h3>
-            Courses
-        </h3>
+                    <h2 id="metric1-value">
+                        0
+                    </h2>
 
-        <p id="courses-count">
-            0
-        </p>
+                </div>
 
-    </div>
+            </div>
 
-    <div class="card-box">
+            <!-- CARD 2 -->
+            <div class="col-md-3">
 
-        <h3>
-            Enrollments
-        </h3>
+                <div class="card bg-secondary border-0 shadow p-3">
 
-        <p id="enrollments-count">
-            0
-        </p>
+                    <h6 id="metric2-title">
+                        Metric 2
+                    </h6>
 
-    </div>
+                    <h2 id="metric2-value">
+                        0
+                    </h2>
 
-    <div class="card-box">
+                </div>
 
-        <h3>
-            Average GPA
-        </h3>
+            </div>
 
-        <p id="gpa-count">
-            0
-        </p>
+            <!-- CARD 3 -->
+            <div class="col-md-3">
 
-    </div>
+                <div class="card bg-secondary border-0 shadow p-3">
 
-</div>
+                    <h6 id="metric3-title">
+                        Metric 3
+                    </h6>
 
-    <!-- TABLE -->
+                    <h2 id="metric3-value">
+                        0
+                    </h2>
 
-    <div class="table-container">
+                </div>
 
-        <h2 style="margin-bottom:20px;">
-            Recent Activity
-        </h2>
+            </div>
 
-        <table>
+            <!-- CARD 4 -->
+            <div class="col-md-3">
 
-            <thead>
+                <div class="card bg-secondary border-0 shadow p-3">
 
-                <tr>
+                    <h6 id="metric4-title">
+                        Metric 4
+                    </h6>
 
-                    <th>User</th>
+                    <h2 id="metric4-value">
+                        0
+                    </h2>
 
-                    <th>Action</th>
+                </div>
 
-                    <th>Date</th>
+            </div>
 
-                </tr>
+        </div>
 
-            </thead>
+        <!-- QUICK ACTIONS -->
+        <div class="card bg-secondary border-0 shadow p-3 mb-4">
 
-            <tbody>
+            <h5 class="mb-3">
+                Quick Actions
+            </h5>
 
-                <tr>
+            <div id="actions"
+                 class="d-flex flex-wrap gap-2">
+            </div>
 
-                    <td>
-                        Admin
-                    </td>
+        </div>
 
-                    <td>
-                        Created student
-                    </td>
+        <!-- ROLE INFO -->
+        <div class="alert alert-info">
 
-                    <td>
-                        Today
-                    </td>
+            Logged as:
+            <strong id="role-info"></strong>
 
-                </tr>
+        </div>
 
-                <tr>
+        <!-- LOGOUT -->
+        <button class="btn btn-danger"
+                onclick="logout()">
 
-                    <td>
-                        Teacher
-                    </td>
+            Logout
 
-                    <td>
-                        Updated grade
-                    </td>
-
-                    <td>
-                        Today
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
+        </button>
 
     </div>
 
@@ -146,6 +134,261 @@
 
 <script>
 
+const API = "http://127.0.0.1:5000"
+
+const user = JSON.parse(
+    localStorage.getItem("user")
+)
+
+
+// =========================
+// AUTH GUARD
+// =========================
+if(!user){
+
+    window.location.href =
+        "login.html"
+}
+
+
+// =========================
+// WELCOME
+// =========================
+document.getElementById(
+    "welcome"
+).innerText =
+    `Welcome ${user.username}`
+
+document.getElementById(
+    "role-info"
+).innerText =
+    user.role.toUpperCase()
+
+
+// =========================
+// QUICK ACTIONS
+// =========================
+function renderActions(){
+
+    const actions =
+        document.getElementById("actions")
+
+    let html = ""
+
+    // ADMIN
+    if(user.role === "admin"){
+
+        html += `
+            <a href="students.html"
+               class="btn btn-primary">
+                Students
+            </a>
+
+            <a href="courses.html"
+               class="btn btn-primary">
+                Courses
+            </a>
+
+            <a href="enrollments.html"
+               class="btn btn-primary">
+                Enrollments
+            </a>
+
+            <a href="grades.html"
+               class="btn btn-primary">
+                Grades
+            </a>
+        `
+    }
+
+    // TEACHER
+    else if(user.role === "teacher"){
+
+        html += `
+            <a href="courses.html"
+               class="btn btn-primary">
+                My Courses
+            </a>
+
+            <a href="enrollments.html"
+               class="btn btn-primary">
+                Enrollments
+            </a>
+
+            <a href="grades.html"
+               class="btn btn-primary">
+                Grades
+            </a>
+        `
+    }
+
+    // STUDENT
+    else if(user.role === "student"){
+
+        html += `
+            <a href="courses.html"
+               class="btn btn-primary">
+                Courses
+            </a>
+
+            <a href="grades.html"
+               class="btn btn-primary">
+                My Grades
+            </a>
+        `
+    }
+
+    actions.innerHTML = html
+}
+
+
+// =========================
+// METRIC HELPER
+// =========================
+function setMetric(index, title, value){
+
+    document.getElementById(
+        `metric${index}-title`
+    ).innerText = title
+
+    document.getElementById(
+        `metric${index}-value`
+    ).innerText = value
+}
+
+
+// =========================
+// LOAD STATS
+// =========================
+async function loadStats(){
+
+    try{
+
+        const response = await fetch(
+            `${API}/stats`,
+            {
+                headers:{
+                    "Role": user.role,
+                    "Student-Id":
+                        user.id_student || "",
+
+                    "Instructor-Id":
+                        user.id_instructor || ""
+                }
+            }
+        )
+
+        const data = await response.json()
+
+        // =========================
+        // ADMIN
+        // =========================
+        if(user.role === "admin"){
+
+            setMetric(
+                1,
+                "Students",
+                data.students ?? 0
+            )
+
+            setMetric(
+                2,
+                "Courses",
+                data.courses ?? 0
+            )
+
+            setMetric(
+                3,
+                "Enrollments",
+                data.enrollments ?? 0
+            )
+
+            setMetric(
+                4,
+                "Avg GPA",
+                data.avg_gpa ?? 0
+            )
+        }
+
+        // =========================
+        // TEACHER
+        // =========================
+        else if(user.role === "teacher"){
+
+            setMetric(
+                1,
+                "My Courses",
+                data.my_courses ?? 0
+            )
+
+            setMetric(
+                2,
+                "My Students",
+                data.my_students ?? 0
+            )
+
+            setMetric(
+                3,
+                "Pending Grades",
+                data.pending_grades ?? 0
+            )
+
+            setMetric(
+                4,
+                "Class GPA",
+                data.class_avg_gpa ?? 0
+            )
+        }
+
+        // =========================
+        // STUDENT
+        // =========================
+        else if(user.role === "student"){
+
+            setMetric(
+                1,
+                "My Courses",
+                data.my_courses ?? 0
+            )
+
+            setMetric(
+                2,
+                "My GPA",
+                data.my_gpa ?? 0
+            )
+
+            setMetric(
+                3,
+                "Passed Courses",
+                data.passed_courses ?? 0
+            )
+
+            setMetric(
+                4,
+                "Semester",
+                data.current_semester ?? "-"
+            )
+        }
+
+    }catch(error){
+
+        console.log(
+            "Stats error:",
+            error
+        )
+
+        // fallback seguro
+        for(let i = 1; i <= 4; i++){
+
+            setMetric(i, "Error", 0)
+        }
+    }
+}
+
+
+// =========================
+// LOGOUT
+// =========================
 function logout(){
 
     localStorage.removeItem("user")
@@ -154,8 +397,17 @@ function logout(){
         "login.html"
 }
 
+
+// =========================
+// INIT
+// =========================
+renderActions()
+
+loadStats()
+
 </script>
-<script src="js/dashboard.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </body>
 </html>

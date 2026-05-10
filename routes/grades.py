@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, jsonify
 from db import get_connection
 from utils.auth import require_role
 
@@ -9,16 +9,10 @@ grades_bp = Blueprint("grades", __name__)
 # =========================
 
 @grades_bp.route("/grades", methods=["GET"])
+@require_role(["admin", "teacher", "student"])
 def get_grades():
 
-    # admin y teacher pueden ver todas las calificaciones
-    auth = require_role(["admin", "teacher"])
-
-    if auth:
-        return auth
-
     conn = get_connection()
-
     cursor = conn.cursor()
 
     query = """
@@ -29,19 +23,15 @@ def get_grades():
         G.FINAL_GRADE,
         G.GPA
     FROM GRADE G
-
     INNER JOIN ENROLLMENT E
-    ON G.ID_ENROLLMENT = E.ID_ENROLLMENT
-
+        ON G.ID_ENROLLMENT = E.ID_ENROLLMENT
     INNER JOIN STUDENTS S
-    ON E.ID_STUDENT = S.ID_STUDENT
-
+        ON E.ID_STUDENT = S.ID_STUDENT
     INNER JOIN COURSE C
-    ON E.ID_COURSE = C.ID_COURSE
+        ON E.ID_COURSE = C.ID_COURSE
     """
 
     cursor.execute(query)
-
     rows = cursor.fetchall()
 
     grades = []
@@ -58,8 +48,7 @@ def get_grades():
 
     conn.close()
 
-    return grades
-
+    return jsonify(grades)
 
 # =========================
 # GET ONE GRADE

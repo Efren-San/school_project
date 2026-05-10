@@ -1,21 +1,23 @@
-from flask import request
+from functools import wraps
+from flask import request, jsonify
 
 def require_role(allowed_roles):
 
-    role = request.headers.get("Role")
+    def decorator(f):
 
-    # No mandó rol
-    if not role:
+        @wraps(f)
+        def wrapper(*args, **kwargs):
 
-        return {
-            "error": "Unauthorized"
-        }, 401
+            role = request.headers.get("Role")
 
-    # Rol sin permisos
-    if role not in allowed_roles:
+            if not role:
+                return jsonify({"error": "Unauthorized"}), 401
 
-        return {
-            "error": "Access denied"
-        }, 403
+            if role not in allowed_roles:
+                return jsonify({"error": "Access denied"}), 403
 
-    return None
+            return f(*args, **kwargs)
+
+        return wrapper
+
+    return decorator  

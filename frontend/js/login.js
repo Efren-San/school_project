@@ -23,32 +23,16 @@ async function login(){
 
     if(data.success){
 
-        // guardar usuario completo
+        // guardar usuario
         localStorage.setItem(
             "user",
             JSON.stringify(data.user)
         )
 
-        // 🔥 REDIRECCIÓN POR ROL
-        const role = data.user.role
+        // 🔥 SIEMPRE IR A UN SOLO DASHBOARD
+        window.location.href = "./dashboard.html"
 
-        if(role === "admin"){
-            window.location.href = "./dashboard_admin.html"
-        }
-
-        else if(role === "teacher"){
-            window.location.href = "./dashboard_teacher.html"
-        }
-
-        else if(role === "student"){
-            window.location.href = "./dashboard_student.html"
-        }
-
-        else {
-            window.location.href = "./dashboard.html"
-        }
-
-    }else{
+    } else {
 
         document.getElementById("message").innerText =
             data.message
