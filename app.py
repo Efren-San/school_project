@@ -12,7 +12,9 @@ from routes.department import department_bp
 
 app = Flask(__name__)
 
-CORS(app)
+from flask_cors import CORS
+
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 app.register_blueprint(students_bp)
 app.register_blueprint(courses_bp)

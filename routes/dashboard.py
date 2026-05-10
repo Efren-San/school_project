@@ -1,22 +1,24 @@
 from flask import Blueprint, request, jsonify
 from db import get_connection
+from utils.auth import require_role
+
+dashboard_bp = Blueprint("dashboard", __name__)
 
 @dashboard_bp.route("/dashboard", methods=["GET"])
 @require_role(["admin", "teacher", "student"])
 def get_dashboard():
 
-
-@dashboard_bp.route("/dashboard", methods=["GET"])
-def get_dashboard():
-
     role = request.headers.get("Role")
     user_id_student = request.headers.get("Student-Id")
+    user_id_instructor = request.headers.get("Instructor-Id")
 
     conn = get_connection()
     cursor = conn.cursor()
 
+    stats = {}
+
     # =========================
-    # ADMIN DASHBOARD
+    # ADMIN
     # =========================
     if role == "admin":
 
@@ -32,68 +34,54 @@ def get_dashboard():
         cursor.execute("SELECT AVG(GPA) FROM GRADE")
         avg_gpa = cursor.fetchone()[0] or 0
 
-        conn.close()
-
-        return jsonify({
-            "role": "admin",
-            "stats": {
-                "students": students,
-                "courses": courses,
-                "enrollments": enrollments,
-                "avg_gpa": round(avg_gpa, 2)
-            },
-            "actions": [
-                "manage_students",
-                "manage_courses",
-                "manage_enrollments"
-            ]
-        })
-
+        stats = {
+            "card1_title": "Students",
+            "card1_value": students,
+            "card2_title": "Courses",
+            "card2_value": courses,
+            "card3_title": "Enrollments",
+            "card3_value": enrollments,
+            "card4_title": "Avg GPA",
+            "card4_value": round(avg_gpa, 2)
+        }
 
     # =========================
-    # TEACHER DASHBOARD
+    # TEACHER
     # =========================
-    if role == "teacher":
+    elif role == "teacher":
 
         cursor.execute("""
-            SELECT COUNT(*)
-            FROM COURSE
-            WHERE ID_INSTRUCTOR = (
-                SELECT ID_INSTRUCTOR FROM USERS WHERE ROLE_USER='teacher'
-            )
-        """)
+            SELECT COUNT(*) FROM COURSE
+            WHERE ID_INSTRUCTOR = ?
+        """, (user_id_instructor,))
         courses = cursor.fetchone()[0]
 
         cursor.execute("""
             SELECT COUNT(*)
-            FROM ENROLLMENT
-        """)
-        enrollments = cursor.fetchone()[0]
+            FROM ENROLLMENT E
+            INNER JOIN COURSE C ON E.ID_COURSE = C.ID_COURSE
+            WHERE C.ID_INSTRUCTOR = ?
+        """, (user_id_instructor,))
+        students = cursor.fetchone()[0]
 
-        conn.close()
-
-        return jsonify({
-            "role": "teacher",
-            "stats": {
-                "courses": courses,
-                "enrollments": enrollments
-            },
-            "actions": [
-                "my_courses",
-                "grades",
-                "enrollments"
-            ]
-        })
-
+        stats = {
+            "card1_title": "My Courses",
+            "card1_value": courses,
+            "card2_title": "My Students",
+            "card2_value": students,
+            "card3_title": "Pending Grades",
+            "card3_value": 0,
+            "card4_title": "Class Avg GPA",
+            "card4_value": 0
+        }
 
     # =========================
-    # STUDENT DASHBOARD
+    # STUDENT
     # =========================
-    if role == "student":
+    elif role == "student":
 
         cursor.execute("""
-            SELECT COUNT(*)
-            FROM ENROLLMENT
+            SELECT COUNT(*) FROM ENROLLMENT
             WHERE ID_STUDENT = ?
         """, (user_id_student,))
         courses = cursor.fetchone()[0]
@@ -107,19 +95,21 @@ def get_dashboard():
         """, (user_id_student,))
         avg_gpa = cursor.fetchone()[0] or 0
 
-        conn.close()
+        stats = {
+            "card1_title": "My Courses",
+            "card1_value": courses,
+            "card2_title": "My GPA",
+            "card2_value": round(avg_gpa, 2),
+            "card3_title": "Passed",
+            "card3_value": 0,
+            "card4_title": "Semester",
+            "card4_value": "-"
+        }
 
-        return jsonify({
-            "role": "student",
-            "stats": {
-                "courses": courses,
-                "avg_gpa": round(avg_gpa, 2)
-            },
-            "actions": [
-                "my_courses",
-                "my_grades"
-            ]
-        })
+    conn.close()
 
-
-    return jsonify({"error": "Invalid role"}), 403
+    return jsonify({
+        "role": role,
+        "stats": stats,
+        "actions": []
+    })

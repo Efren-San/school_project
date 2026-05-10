@@ -5,13 +5,27 @@ if (!user) {
 }
 
 const API = "http://127.0.0.1:5000"
+
 async function loadGrades() {
 
     try {
 
-        const response = await fetch(`${API}/grades`, {
+        let url = ""
+
+        if (user.role === "student") {
+
+            url = `${API}/grades/student/${user.id_student}`
+        }
+
+        else {
+
+            url = `${API}/grades`
+        }
+
+        const response = await fetch(url, {
             headers: {
-                "Role": user.role
+                "Role": user.role,
+                "Content-Type": "application/json"
             }
         })
 
@@ -31,7 +45,7 @@ async function loadGrades() {
 
                     <td>
                         ${
-                            user.role === "admin" || user.role === "teacher"
+                            (user.role === "admin" || user.role === "teacher")
                                 ? `
                                     <button class="btn btn-primary btn-sm"
                                         onclick="editGrade('${grade.id_enrollment}')">
@@ -46,6 +60,7 @@ async function loadGrades() {
         })
 
     } catch (error) {
+
         console.error("Error loading grades:", error)
     }
 }
@@ -64,32 +79,38 @@ async function editGrade(id) {
         showCancelButton: true
     })
 
-    if (newGrade === null || newGrade === "") return
+    if (!newGrade) return
 
-    const response = await fetch(`${API}/grades/${id}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Role": user.role
-        },
-        body: JSON.stringify({
-            final_grade: parseFloat(newGrade)
+    try {
+
+        const response = await fetch(`${API}/grades/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Role": user.role
+            },
+            body: JSON.stringify({
+                final_grade: parseFloat(newGrade)
+            })
         })
-    })
 
-    const data = await response.json()
+        const data = await response.json()
 
-    await Swal.fire({
-        icon: data.error ? "error" : "success",
-        title: data.error ? "Error" : "Updated",
-        text: data.message || data.error
-    })
+        await Swal.fire({
+            icon: data.error ? "error" : "success",
+            title: data.error ? "Error" : "Updated",
+            text: data.message || data.error
+        })
 
-    loadGrades()
+        loadGrades()
+
+    } catch (error) {
+
+        console.error(error)
+    }
 }
 
 function goBack() {
     window.location.href = "dashboard.html"
 }
-
 loadGrades()

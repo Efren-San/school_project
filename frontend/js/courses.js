@@ -56,7 +56,6 @@ async function loadCourses() {
     }
 }
 
-// =========================
 async function deleteCourse(id) {
 
     const result = await Swal.fire({

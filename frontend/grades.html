@@ -22,7 +22,6 @@
 <div class="main-content">
     <div id="header-container"></div>
     <script src="components/header.js"></script>
-    <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <div>
@@ -51,7 +50,6 @@
 
     </div>
 
-    <!-- FORM -->
 
     <div class="card bg-secondary border-0 shadow mb-4"
          id="form-container">
@@ -96,8 +94,6 @@
         </div>
 
     </div>
-
-    <!-- TABLE -->
 
     <div class="card bg-secondary border-0 shadow">
 
@@ -159,10 +155,6 @@ document.getElementById("role-info").innerText =
     `Logged as ${user.role}`
 
 
-// =========================
-// ROLE CONTROL
-// =========================
-
 if(
     user.role !== "admin"
     &&
@@ -173,11 +165,6 @@ if(
         "form-container"
     ).style.display = "none"
 }
-
-
-// =========================
-// LOAD GRADES
-// =========================
 
 async function loadGrades(){
 
@@ -272,10 +259,6 @@ async function loadGrades(){
 }
 
 
-// =========================
-// CREATE GRADE
-// =========================
-
 async function createGrade(){
 
     const grade = {
@@ -326,10 +309,6 @@ async function createGrade(){
 }
 
 
-// =========================
-// EDIT GRADE
-// =========================
-
 async function editGrade(id){
 
     const newGrade = prompt(
@@ -374,11 +353,6 @@ async function editGrade(id){
     }
 }
 
-
-// =========================
-// DELETE GRADE
-// =========================
-
 async function deleteGrade(id){
 
     if(!confirm("Delete grade?")){
@@ -412,10 +386,6 @@ async function deleteGrade(id){
 }
 
 
-// =========================
-// NAVIGATION
-// =========================
-
 function goBack(){
 
     window.location.href =
@@ -429,11 +399,6 @@ function logout(){
     window.location.href =
         "./login.html"
 }
-
-
-// =========================
-// INIT
-// =========================
 
 loadGrades()
 

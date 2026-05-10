@@ -4,9 +4,6 @@ if(!user){
     window.location.href = "login.html"
 }
 
-// document.getElementById("role-label").innerText =
-//     `Logged as: ${user.role.toUpperCase()}`
-
 async function loadDashboard(){
 
     try{
@@ -28,13 +25,10 @@ async function loadDashboard(){
         )
 
         const data = await response.json()
-        // =========================
-        // STATS RENDER
-        // =========================
+
 
         const stats = data.stats
 
-        // CARD 1
         document.getElementById("stat-1-title").innerText =
             stats.card1_title || "Stat 1"
         document.getElementById("stat-1").innerText =

@@ -11,6 +11,9 @@ def get_transcript(student_id):
     conn = get_connection()
     cursor = conn.cursor()
 
+    # ✅ SI LO QUIERES USAR, VA AQUÍ DENTRO
+    cursor.execute("SET NOCOUNT ON")
+
     query = """
     SELECT
         ID_STUDENT,
