@@ -1,20 +1,11 @@
 const user = JSON.parse(localStorage.getItem("user"))
 
-// =========================
-// AUTH GUARD
-// =========================
 if (!user) {
     window.location.href = "login.html"
 }
 
-// =========================
-// API BASE
-// =========================
 const API = "http://127.0.0.1:5000"
 
-// =========================
-// LOAD COURSES
-// =========================
 async function loadCourses() {
 
     try {
@@ -66,8 +57,6 @@ async function loadCourses() {
 }
 
 // =========================
-// DELETE COURSE
-// =========================
 async function deleteCourse(id) {
 
     const result = await Swal.fire({
@@ -99,9 +88,6 @@ async function deleteCourse(id) {
     loadCourses()
 }
 
-// =========================
-// EDIT COURSE
-// =========================
 async function editCourse(id) {
 
     const { value: newName } = await Swal.fire({
@@ -131,23 +117,12 @@ async function editCourse(id) {
         title: data.error ? "Error" : "Updated",
         text: data.message || data.error
     })
-
     loadCourses()
 }
 
-// =========================
-// NAVIGATION FIX (IMPORTANTE)
-// =========================
-
-// 🔥 SI USAS DASHBOARD ÚNICO:
 function goBack() {
     window.location.href = "dashboard.html"
 }
 
-// 🔥 SI CAMBIAS A DASHBOARD POR ROL:
-// window.location.href = `dashboard_${user.role}.html`
 
-// =========================
-// INIT
-// =========================
 loadCourses()

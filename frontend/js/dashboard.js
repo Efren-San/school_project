@@ -1,23 +1,12 @@
 const user = JSON.parse(localStorage.getItem("user"))
-
-// =========================
-// AUTH GUARD
-// =========================
 if(!user){
 
     window.location.href = "login.html"
 }
 
-// =========================
-// ROLE LABEL
-// =========================
-document.getElementById("role-label").innerText =
-    `Logged as: ${user.role.toUpperCase()}`
+// document.getElementById("role-label").innerText =
+//     `Logged as: ${user.role.toUpperCase()}`
 
-
-// =========================
-// LOAD DASHBOARD
-// =========================
 async function loadDashboard(){
 
     try{
@@ -25,10 +14,8 @@ async function loadDashboard(){
         const headers = {
 
             "Role": user.role,
-
             "Student-Id":
                 user.id_student || "",
-
             "Instructor-Id":
                 user.id_instructor || ""
         }
@@ -51,38 +38,25 @@ async function loadDashboard(){
         // CARD 1
         document.getElementById("stat-1-title").innerText =
             stats.card1_title || "Stat 1"
-
         document.getElementById("stat-1").innerText =
             stats.card1_value || 0
 
-
-        // CARD 2
         document.getElementById("stat-2-title").innerText =
             stats.card2_title || "Stat 2"
-
         document.getElementById("stat-2").innerText =
             stats.card2_value || 0
 
-
-        // CARD 3
         document.getElementById("stat-3-title").innerText =
             stats.card3_title || "Stat 3"
-
         document.getElementById("stat-3").innerText =
             stats.card3_value || 0
 
-
-        // CARD 4
+        // Revisa esta card
         document.getElementById("stat-4-title").innerText =
             stats.card4_title || "Stat 4"
-
         document.getElementById("stat-4").innerText =
             stats.card4_value || 0
 
-
-        // =========================
-        // ACTIONS RENDER
-        // =========================
 
         const actionsDiv =
             document.getElementById("actions")
@@ -112,10 +86,6 @@ async function loadDashboard(){
     }
 }
 
-
-// =========================
-// LOGOUT
-// =========================
 function logout(){
 
     localStorage.removeItem("user")
@@ -124,8 +94,4 @@ function logout(){
         "login.html"
 }
 
-
-// =========================
-// INIT
-// =========================
 loadDashboard()

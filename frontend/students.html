@@ -198,9 +198,6 @@ document.getElementById("role-info").innerText =
     `Logged as ${user.role}`
 
 
-// =========================
-// ROLE CONTROL
-// =========================
 
 if(user.role !== "admin"){
 
@@ -209,10 +206,6 @@ if(user.role !== "admin"){
     ).style.display = "none"
 }
 
-
-// =========================
-// LOAD STUDENTS
-// =========================
 
 async function loadStudents(){
 
@@ -294,11 +287,6 @@ async function loadStudents(){
     }
 }
 
-
-// =========================
-// CREATE STUDENT
-// =========================
-
 async function createStudent(){
 
     const student = {
@@ -366,11 +354,6 @@ async function createStudent(){
     }
 }
 
-
-// =========================
-// DELETE STUDENT
-// =========================
-
 async function deleteStudent(id){
 
     if(!confirm("Delete student?")){
@@ -402,11 +385,6 @@ async function deleteStudent(id){
         console.log(error)
     }
 }
-
-
-// =========================
-// EDIT STUDENT
-// =========================
 
 async function editStudent(id){
 
@@ -461,10 +439,6 @@ async function editStudent(id){
 }
 
 
-// =========================
-// NAVIGATION
-// =========================
-
 function goBack(){
 
     window.location.href =
@@ -479,10 +453,6 @@ function logout(){
         "./login.html"
 }
 
-
-// =========================
-// INIT
-// =========================
 
 loadStudents()
 

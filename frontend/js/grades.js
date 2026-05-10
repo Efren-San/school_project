@@ -1,20 +1,10 @@
 const user = JSON.parse(localStorage.getItem("user"))
 
-// =========================
-// AUTH GUARD
-// =========================
 if (!user) {
     window.location.href = "login.html"
 }
 
-// =========================
-// API BASE
-// =========================
 const API = "http://127.0.0.1:5000"
-
-// =========================
-// LOAD GRADES
-// =========================
 async function loadGrades() {
 
     try {
@@ -60,9 +50,6 @@ async function loadGrades() {
     }
 }
 
-// =========================
-// EDIT GRADE
-// =========================
 async function editGrade(id) {
 
     const { value: newGrade } = await Swal.fire({
@@ -101,16 +88,8 @@ async function editGrade(id) {
     loadGrades()
 }
 
-// =========================
-// NAVIGATION (UNIFIED DASHBOARD)
-// =========================
-
-// 🔥 DASHBOARD ÚNICO
 function goBack() {
     window.location.href = "dashboard.html"
 }
 
-// =========================
-// INIT
-// =========================
 loadGrades()

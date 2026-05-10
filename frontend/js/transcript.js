@@ -8,29 +8,17 @@ if(!user){
 }
 
 const API = "http://127.0.0.1:5000"
-
-// =========================
-// GET STUDENT ID
-// =========================
-
 let studentId = user.id_student
 
 // admin/teacher demo
 if(user.role !== "student"){
-
     studentId = "S001"
 }
-
-// =========================
-// LOAD TRANSCRIPT
-// =========================
 
 async function loadTranscript(){
 
     const response = await fetch(
-
         `${API}/transcript/${studentId}`,
-
         {
             headers:{
                 "Role": user.role
@@ -69,26 +57,16 @@ async function loadTranscript(){
         table.innerHTML += `
 
             <tr>
-
                 <td>${item.course}</td>
-
                 <td>${item.credits}</td>
-
                 <td>${item.final_grade}</td>
-
                 <td>${item.gpa_points}</td>
-
             </tr>
         `
     })
 }
 
-// =========================
-// NAVIGATION
-// =========================
-
 function goBack(){
-
     window.location.href = "dashboard.html"
 }
 

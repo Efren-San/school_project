@@ -22,14 +22,11 @@ async function login(){
     console.log("LOGIN RESPONSE:", data)
 
     if(data.success){
-
-        // guardar usuario
         localStorage.setItem(
             "user",
             JSON.stringify(data.user)
         )
 
-        // 🔥 SIEMPRE IR A UN SOLO DASHBOARD
         window.location.href = "./dashboard.html"
 
     } else {

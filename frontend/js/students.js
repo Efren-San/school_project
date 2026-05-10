@@ -1,8 +1,6 @@
 const user = JSON.parse(localStorage.getItem("user"))
 
-// =========================
-// AUTH GUARD
-// =========================
+// auth guar
 if (!user) {
     window.location.href = "login.html"
 }
@@ -13,14 +11,7 @@ if (user.role !== "admin") {
     if (form) form.style.display = "none"
 }
 
-// =========================
-// API BASE
-// =========================
 const API = "http://127.0.0.1:5000"
-
-// =========================
-// LOAD STUDENTS
-// =========================
 async function loadStudents() {
 
     try {
@@ -73,9 +64,6 @@ async function loadStudents() {
     }
 }
 
-// =========================
-// CREATE STUDENT
-// =========================
 async function createStudent() {
 
     const student = {
@@ -107,9 +95,6 @@ async function createStudent() {
     loadStudents()
 }
 
-// =========================
-// DELETE STUDENT
-// =========================
 async function deleteStudent(id) {
 
     const result = await Swal.fire({
@@ -141,9 +126,6 @@ async function deleteStudent(id) {
     loadStudents()
 }
 
-// =========================
-// EDIT STUDENT
-// =========================
 async function editStudent(id) {
 
     const { value: newName } = await Swal.fire({
@@ -181,24 +163,9 @@ async function editStudent(id) {
     loadStudents()
 }
 
-// =========================
-// NAVIGATION FIX (IMPORTANTE)
-// =========================
-
-// 🔥 SI TIENES UN SOLO DASHBOARD, USA ESTO:
 function goBack() {
     window.location.href = "dashboard.html"
 }
 
-// 🔥 SI LUEGO QUIERES POR ROL, CAMBIA A ESTO:
-// window.location.href = `dashboard_${user.role}.html`
 
-function logout() {
-    localStorage.removeItem("user")
-    window.location.href = "login.html"
-}
-
-// =========================
-// INIT
-// =========================
 loadStudents()

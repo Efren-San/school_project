@@ -1,28 +1,16 @@
 const user = JSON.parse(localStorage.getItem("user"))
 
-// =========================
-// AUTH GUARD
-// =========================
 if (!user) {
     window.location.href = "login.html"
 }
 
-// =========================
-// API BASE
-// =========================
 const API = "http://127.0.0.1:5000"
 
-// =========================
-// ROLE UI CONTROL
-// =========================
 if (user.role !== "admin" && user.role !== "teacher") {
     const form = document.getElementById("form-container")
     if (form) form.style.display = "none"
 }
 
-// =========================
-// LOAD ENROLLMENTS
-// =========================
 async function loadEnrollments() {
 
     try {
@@ -69,9 +57,6 @@ async function loadEnrollments() {
     }
 }
 
-// =========================
-// CREATE ENROLLMENT
-// =========================
 async function createEnrollment() {
 
     const enrollment = {
@@ -100,9 +85,6 @@ async function createEnrollment() {
     loadEnrollments()
 }
 
-// =========================
-// DELETE ENROLLMENT
-// =========================
 async function deleteEnrollment(id) {
 
     const result = await Swal.fire({
@@ -134,31 +116,18 @@ async function deleteEnrollment(id) {
     loadEnrollments()
 }
 
-// =========================
-// NAVIGATION (UNIFIED DASHBOARD)
-// =========================
 
-// 🔥 DASHBOARD ÚNICO
 function goBack() {
     window.location.href = "dashboard.html"
 }
 
-// =========================
-// LOGOUT
-// =========================
 function logout() {
     localStorage.removeItem("user")
     window.location.href = "login.html"
 }
 
-// =========================
-// OPTIONAL NAV (si lo usas)
-// =========================
 function goEnrollments() {
     window.location.href = "enrollments.html"
 }
 
-// =========================
-// INIT
-// =========================
 loadEnrollments()

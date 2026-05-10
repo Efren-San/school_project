@@ -111,14 +111,9 @@ document.getElementById("role-info").innerText =
     `Logged as ${user.role}`
 
 
-// =========================
-// LOAD COURSES
-// =========================
-
 async function loadCourses(){
 
     try{
-
         const response = await fetch(
             "http://127.0.0.1:5000/courses",
             {
@@ -142,34 +137,21 @@ async function loadCourses(){
             table.innerHTML += `
             
             <tr>
-
                 <td>${course.id_course}</td>
-
                 <td>${course.name_course}</td>
-
                 <td>${course.credits}</td>
-
                 <td>${course.semester}</td>
-
                 <td>${course.capacity}</td>
-
             </tr>
             `
         })
 
     }catch(error){
-
         console.log(error)
     }
 }
 
-
-// =========================
-// NAVIGATION
-// =========================
-
 function goBack(){
-
     window.location.href =
         "./dashboard.html"
 }
@@ -177,15 +159,9 @@ function goBack(){
 function logout(){
 
     localStorage.removeItem("user")
-
     window.location.href =
         "./login.html"
 }
-
-
-// =========================
-// INIT
-// =========================
 
 loadCourses()
 

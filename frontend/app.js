@@ -1,9 +1,5 @@
 const API_URL = "http://127.0.0.1:5000/students";
 
-// =========================
-// GET STUDENTS
-// =========================
-
 async function loadStudents() {
 
     const response = await fetch(API_URL);
@@ -45,10 +41,6 @@ async function loadStudents() {
 
 }
 
-// =========================
-// ADD STUDENT
-// =========================
-
 async function addStudent() {
 
     const student = {
@@ -79,10 +71,6 @@ async function addStudent() {
 
     loadStudents();
 }
-
-// =========================
-// DELETE STUDENT
-// =========================
 
 async function deleteStudent(id) {
 

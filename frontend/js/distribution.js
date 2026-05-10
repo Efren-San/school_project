@@ -8,19 +8,12 @@ if(!user){
 }
 
 const API = "http://127.0.0.1:5000"
-
-
-// =========================
-// LOAD COURSES
-// =========================
 async function loadCourses(){
 
     try{
 
         const response = await fetch(
-
             `${API}/courses`,
-
             {
                 headers:{
                     "Role": user.role
@@ -44,7 +37,6 @@ async function loadCourses(){
             select.innerHTML += `
 
                 <option value="${course.id_course}">
-
                     ${course.id_course}
                     -
                     ${course.name_course}
@@ -63,9 +55,6 @@ async function loadCourses(){
 }
 
 
-// =========================
-// LOAD DISTRIBUTION
-// =========================
 async function loadDistribution(){
 
     const courseId =
@@ -76,9 +65,7 @@ async function loadDistribution(){
     if(!courseId){
 
         Swal.fire({
-
             icon: "warning",
-
             title: "Select a course"
         })
 
@@ -110,13 +97,9 @@ async function loadDistribution(){
         data.forEach(item => {
 
             table.innerHTML += `
-
                 <tr>
-
                     <td>${item.category}</td>
-
                     <td>${item.total}</td>
-
                 </tr>
             `
         })
