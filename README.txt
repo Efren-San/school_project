@@ -194,9 +194,9 @@ This project was developed as an academic assignment.
 
 If any AI tools  were used, 
 they were used only for assistance in debugging and learning purposes,
-also to present a Project with an profesional aspecto,
+also to present a Project with an profesional aspect,
 not for full automatic generation of the project.
 
 All core logic, database design, and implementation decisions 
-were made by the student, only corrected by the IA.
+were made by the student, only corrected by the AI if necessary.
 
