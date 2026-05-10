@@ -5,51 +5,60 @@ from utils.auth import require_role
 grades_bp = Blueprint("grades", __name__)
 
 # =========================
-# GET ALL GRADES
+# F07 - GRADE DISTRIBUTION
 # =========================
 
-@grades_bp.route("/grades", methods=["GET"])
-@require_role(["admin", "teacher", "student"])
-def get_grades():
+@grades_bp.route("/grades/distribution/<course_id>", methods=["GET"])
+@require_role(["admin", "teacher"])
+def grade_distribution(course_id):
 
     conn = get_connection()
     cursor = conn.cursor()
 
     query = """
     SELECT
-        G.ID_GRADE,
-        S.NAME_STUDENT,
-        C.NAME_COURSE,
-        G.FINAL_GRADE,
-        G.GPA
+        CASE
+            WHEN G.FINAL_GRADE >= 90 THEN 'Excellent'
+            WHEN G.FINAL_GRADE >= 80 THEN 'Good'
+            WHEN G.FINAL_GRADE >= 70 THEN 'Average'
+            WHEN G.FINAL_GRADE >= 60 THEN 'Pass'
+            ELSE 'Fail'
+        END AS grade_category,
+
+        COUNT(*) AS total_students
+
     FROM GRADE G
+
     INNER JOIN ENROLLMENT E
         ON G.ID_ENROLLMENT = E.ID_ENROLLMENT
-    INNER JOIN STUDENTS S
-        ON E.ID_STUDENT = S.ID_STUDENT
-    INNER JOIN COURSE C
-        ON E.ID_COURSE = C.ID_COURSE
+
+    WHERE E.ID_COURSE = ?
+
+    GROUP BY
+        CASE
+            WHEN G.FINAL_GRADE >= 90 THEN 'Excellent'
+            WHEN G.FINAL_GRADE >= 80 THEN 'Good'
+            WHEN G.FINAL_GRADE >= 70 THEN 'Average'
+            WHEN G.FINAL_GRADE >= 60 THEN 'Pass'
+            ELSE 'Fail'
+        END
     """
 
-    cursor.execute(query)
+    cursor.execute(query, (course_id,))
     rows = cursor.fetchall()
 
-    grades = []
+    result = []
 
     for row in rows:
 
-        grades.append({
-            "id_grade": row[0],
-            "student": row[1],
-            "course": row[2],
-            "final_grade": float(row[3]),
-            "gpa": float(row[4]) if row[4] is not None else 0
+        result.append({
+            "category": row[0],
+            "total": row[1]
         })
 
     conn.close()
 
-    return jsonify(grades)
-
+    return jsonify(result)
 # =========================
 # GET ONE GRADE
 # =========================

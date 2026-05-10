@@ -21,9 +21,13 @@
 
         <!-- TITLE -->
         <div class="mb-4">
-            <h1 class="fw-bold">Dashboard</h1>
+
+            <h1 class="fw-bold">
+                Dashboard
+            </h1>
 
             <p id="welcome" class="text-muted"></p>
+
         </div>
 
         <!-- STATS -->
@@ -175,7 +179,9 @@ function renderActions(){
 
     let html = ""
 
+    // =========================
     // ADMIN
+    // =========================
     if(user.role === "admin"){
 
         html += `
@@ -198,10 +204,22 @@ function renderActions(){
                class="btn btn-primary">
                 Grades
             </a>
+
+            <a href="grades_distribution.html"
+               class="btn btn-primary">
+                Grade Distribution
+            </a>
+
+            <a href="transcript.html"
+               class="btn btn-primary">
+                Student Transcript
+            </a>
         `
     }
 
+    // =========================
     // TEACHER
+    // =========================
     else if(user.role === "teacher"){
 
         html += `
@@ -219,10 +237,22 @@ function renderActions(){
                class="btn btn-primary">
                 Grades
             </a>
+
+            <a href="grades_distribution.html"
+               class="btn btn-primary">
+                Grade Distribution
+            </a>
+
+            <a href="transcript.html"
+               class="btn btn-primary">
+                Student Transcript
+            </a>
         `
     }
 
+    // =========================
     // STUDENT
+    // =========================
     else if(user.role === "student"){
 
         html += `
@@ -234,6 +264,11 @@ function renderActions(){
             <a href="grades.html"
                class="btn btn-primary">
                 My Grades
+            </a>
+
+            <a href="transcript.html"
+               class="btn btn-primary">
+                My Transcript
             </a>
         `
     }
@@ -269,6 +304,7 @@ async function loadStats(){
             {
                 headers:{
                     "Role": user.role,
+
                     "Student-Id":
                         user.id_student || "",
 
